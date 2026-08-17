@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: hi
+  datasource:
+    url: "jdbc:mysql://localhost:3306/hi_database?createDatabaseIfNotExist=true"
+    username: "root"
+    password: "$CDB1234r"

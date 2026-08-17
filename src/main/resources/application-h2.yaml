@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: hi
+  datasource:
+    url: "jdbc:h2:mem:hi_database"
+    username: "sa"
+    password: ""

@@ -1,0 +1,61 @@
+package dutkercz.hi_backend.model;
+
+import dutkercz.hi_backend.model.enums.StayStatus;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "tb_stays")
+public class Stay {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    private Client client;
+
+    @ManyToOne
+    private Room room;
+
+    private BigDecimal dailyPrice; //definido pelo numero de hospedes
+    private BigDecimal partialPrice; //usado se houver alteração no numero de hospedes
+    private BigDecimal totalPrice; // total na hora do checkout (dayliPrice * totalDaily + partialPrice)
+
+    private Integer totalGuests;
+    private Integer totalDaily; //settar em 1 apos um calculo de partialPrice
+
+    @Enumerated(EnumType.STRING)
+    private StayStatus stayStatus = StayStatus.CURRENT;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime checkIn;
+
+    private LocalDateTime checkOut;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stay")
+    private List<StayGuest> stayGuests = new ArrayList<>();
+
+    public void addStayGuest(StayGuest stayGuest) {
+        stayGuests.add(stayGuest);
+        stayGuest.setStay(this);
+    }
+
+    public void removeStayGuest(StayGuest stayGuest) {
+        stayGuests.remove(stayGuest);
+        stayGuest.setStay(null);
+    }
+
+}
