@@ -1,6 +1,7 @@
 package dutkercz.hi_backend.service;
 
 import dutkercz.hi_backend.dto.room.RoomForCardDto;
+import dutkercz.hi_backend.dto.room.RoomResponseDto;
 import dutkercz.hi_backend.mapper.RoomMapper;
 import dutkercz.hi_backend.model.Room;
 import dutkercz.hi_backend.model.Stay;
@@ -9,6 +10,7 @@ import dutkercz.hi_backend.repository.RoomRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ public class RoomService {
 
     private final RoomRepository roomRepository;
     private final RoomMapper roomMapper;
+    private final StayService stayService;
 
     public List<RoomForCardDto> getAllRooms() {
 
@@ -37,5 +40,14 @@ public class RoomService {
     public Room getRoomById(Long id) {
         return roomRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Room not found with id: " + id));
+    }
+
+    @Transactional
+    public RoomResponseDto addDaily(Long id) {
+        var room = getRoomById(id);
+        var stay = room.getStays().stream().filter(s -> s.getStayStatus() == StayStatus.CURRENT).findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("No stays actives for this room"));
+        stayService.addStay(stay.getId());
+        return roomMapper.toResponseRoomDto(room);
     }
 }

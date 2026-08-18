@@ -30,7 +30,8 @@ public interface StayMapper {
     @Mapping(target = "checkOut", source = "checkout")
     @Mapping(target = "partialPrice", source = "valorTotal")
     @Mapping(target = "stayGuests", ignore = true)
+    @Mapping(target = "dailyPrice", source = "dailyPrice")
     Stay toEntity(StayRequestDto request, Client client, Room room, LocalDateTime checkin,
-                  LocalDateTime checkout, BigDecimal valorTotal, StayStatus status);
+                  LocalDateTime checkout,BigDecimal dailyPrice, BigDecimal valorTotal, StayStatus status);
 }
 

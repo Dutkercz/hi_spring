@@ -53,7 +53,7 @@ public class StayService {
         // 3. Calcula o valor total financeiro
         BigDecimal valorTotal = stayDailyPrice.multiply(BigDecimal.valueOf(dailyRates));
 
-        Stay stay = stayMapper.toEntity(request, client, room, checkInAjustado, checkOutAjustado,
+        Stay stay = stayMapper.toEntity(request, client, room, checkInAjustado, checkOutAjustado, stayDailyPrice,
                                         valorTotal, StayStatus.CURRENT);
         room.setStatus(RoomStatusEnum.OCCUPIED);
 
@@ -97,5 +97,12 @@ public class StayService {
     }
 
 
+    @Transactional
+    public void addStay(Long id) {
+        var stay = stayRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Stay with id " + id + " not found"));
+        stay.setCheckOut(stay.getCheckOut().plusDays(1));
+        long dailyRates = HelperStayCalcs.calcDailyRates(stay.getCheckIn(), stay.getCheckOut());
+        stay.setTotalPrice(stay.getDailyPrice().multiply(BigDecimal.valueOf(dailyRates)));
+    }
 }
 

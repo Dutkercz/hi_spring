@@ -1,11 +1,10 @@
 package dutkercz.hi_backend.controller;
 
 import dutkercz.hi_backend.dto.room.RoomForCardDto;
+import dutkercz.hi_backend.dto.room.RoomResponseDto;
 import dutkercz.hi_backend.service.RoomService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,5 +21,10 @@ public class RoomController {
     @GetMapping
     public ResponseEntity<List<RoomForCardDto>> getAllRooms(){
         return ResponseEntity.ok().body(roomService.getAllRooms());
+    }
+
+    @PutMapping("/add-daily/{id}")
+    public ResponseEntity<RoomResponseDto> addDaily(@PathVariable Long id){
+        return ResponseEntity.ok(roomService.addDaily(id));
     }
 }
