@@ -1,7 +1,9 @@
 package dutkercz.hi_backend.service;
 
+import dutkercz.hi_backend.dto.stay.StayPayment;
 import dutkercz.hi_backend.dto.stay.StayRequestDto;
 import dutkercz.hi_backend.dto.stay.StayResponseDto;
+import dutkercz.hi_backend.exceptions.PaymentLimitException;
 import dutkercz.hi_backend.mapper.StayMapper;
 import dutkercz.hi_backend.model.Client;
 import dutkercz.hi_backend.model.Room;
@@ -98,10 +100,25 @@ public class StayService {
 
     @Transactional
     public void addStay(Long id) {
-        var stay = stayRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Stay with id " + id + " not found"));
+        var stay = stayRepository.findById(id).orElseThrow(() ->
+                                            new EntityNotFoundException("Stay with id " + id + " not found"));
         stay.setCheckOut(stay.getCheckOut().plusDays(1));
         long dailyRates = HelperStayCalcs.calcDailyRates(stay.getCheckIn(), stay.getCheckOut());
         stay.setTotalPrice(stay.getDailyPrice().multiply(BigDecimal.valueOf(dailyRates)));
+    }
+
+    @Transactional
+    public StayResponseDto addPayment(Long id, StayPayment payment) {
+        var stay = stayRepository.findById(id).orElseThrow(() ->
+                                           new EntityNotFoundException("Stay with id " + id + " not found"));
+        if (payment.amount().compareTo(stay.getTotalPrice()) > 0) {
+            throw new PaymentLimitException("This payment amount exceeds daily total amount");
+        }
+        if (payment.amount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new PaymentLimitException("Payment amount cant be negative or zero");
+        }
+        stay.addPaymentAmount(payment.amount());
+        return stayMapper.toResponse(stay);
     }
 }
 

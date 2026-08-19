@@ -2,10 +2,7 @@ package dutkercz.hi_backend.model;
 
 import dutkercz.hi_backend.model.enums.StayStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tb_stays")
+@ToString
 public class Stay {
 
     @Id
@@ -59,4 +57,7 @@ public class Stay {
         stayGuest.setStay(null);
     }
 
+    public void addPaymentAmount(BigDecimal amount) {
+        this.paidPrice = this.paidPrice.add(amount);
+    }
 }
