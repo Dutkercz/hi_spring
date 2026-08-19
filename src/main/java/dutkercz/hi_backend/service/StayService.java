@@ -104,6 +104,7 @@ public class StayService {
                                             new EntityNotFoundException("Stay with id " + id + " not found"));
         stay.setCheckOut(stay.getCheckOut().plusDays(1));
         long dailyRates = HelperStayCalcs.calcDailyRates(stay.getCheckIn(), stay.getCheckOut());
+        stay.setDailyRates(dailyRates);
         stay.setTotalPrice(stay.getDailyPrice().multiply(BigDecimal.valueOf(dailyRates)));
     }
 

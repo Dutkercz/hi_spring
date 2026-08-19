@@ -9,6 +9,7 @@ public record StayResponseDto(
         RoomSummaryResponse room,
         LocalDateTime checkIn,
         LocalDateTime checkOut,
+        Long dailyRates,
         BigDecimal dailyPrice,
         BigDecimal paidPrice,
         BigDecimal remainingPrice,
