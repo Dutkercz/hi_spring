@@ -26,5 +26,8 @@ public record StayRequestDto(
         @NotNull
         Integer totalGuests,
 
+        @NotNull
+        Boolean isPaid,
+
         List<StayGuest> stayGuests
 ) {}

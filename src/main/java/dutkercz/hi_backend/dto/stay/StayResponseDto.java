@@ -10,7 +10,7 @@ public record StayResponseDto(
         LocalDateTime checkIn,
         LocalDateTime checkOut,
         BigDecimal dailyPrice,
-        BigDecimal partialPrice,
+        BigDecimal paidPrice,
         BigDecimal totalPrice,
         String stayStatus
 ) {

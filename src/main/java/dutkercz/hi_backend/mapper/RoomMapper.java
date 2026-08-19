@@ -21,6 +21,7 @@ public interface RoomMapper {
     RoomForCardDto toRoomForCardDto(Room room, Stay lastStay);
 
     @Named("s")
+    @Mapping(target = "paidPrice", source = "stay.paidPrice" )
     StayResponseDto toStayActiveResponseDto(Stay stay);
 
 

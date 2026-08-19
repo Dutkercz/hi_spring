@@ -9,7 +9,6 @@ import dutkercz.hi_backend.model.Stay;
 import dutkercz.hi_backend.model.StayGuest;
 import dutkercz.hi_backend.model.enums.RoomStatusEnum;
 import dutkercz.hi_backend.model.enums.StayStatus;
-import dutkercz.hi_backend.repository.RoomRepository;
 import dutkercz.hi_backend.repository.StayRepository;
 import dutkercz.hi_backend.service.utils.HelperStayCalcs;
 import dutkercz.hi_backend.service.validations.client.ClientValidation;
@@ -33,28 +32,28 @@ public class StayService {
     private final StayMapper stayMapper;
     private final RoomValidation roomValidation;
     private final StayRepository stayRepository;
-    private final RoomRepository roomRepository;
-
 
     @Transactional
     public StayResponseDto newStay(StayRequestDto request) {
         log.info("StayRequestDto: {}", request);
         Client client = clientValidation.validateWithId(request.clientId());
-        Room room = roomRepository.findById(request.roomId()).orElseThrow(() ->
-                new EntityNotFoundException("Room with id " + request.roomId() + " not found"));
-        // 1. Aplica as regras de ajuste de horários de entrada e saída
+
+        Room room = roomValidation.validateRoomInRequest(request);
+
         LocalDateTime checkInAjustado = adjustCheckin(request.checkIn());
         LocalDateTime checkOutAjustado = adjustCheckout(request.checkOut());
+
+        //calcula o valor de 1 diária baseado no número de pagantes
         BigDecimal stayDailyPrice = HelperStayCalcs.calcPerDayPrice(request.totalGuests());
 
-        // 2. Calcula a quantidade de diárias com base nos horários corrigidos
+        //calcula o numero de diárias, baseado no checkin e checkout, seguindo as regras do hotel
         long dailyRates = HelperStayCalcs.calcDailyRates(checkInAjustado, checkOutAjustado);
 
-        // 3. Calcula o valor total financeiro
-        BigDecimal valorTotal = stayDailyPrice.multiply(BigDecimal.valueOf(dailyRates));
+        //Preço total é o valor de 1 diária, multiplaco pelo numero de diárias (valor * quantidade)
+        BigDecimal totalPrice = stayDailyPrice.multiply(BigDecimal.valueOf(dailyRates));
 
         Stay stay = stayMapper.toEntity(request, client, room, checkInAjustado, checkOutAjustado, stayDailyPrice,
-                                        valorTotal, StayStatus.CURRENT);
+                                            totalPrice, dailyRates, StayStatus.CURRENT);
         room.setStatus(RoomStatusEnum.OCCUPIED);
 
         stayRepository.save(stay);

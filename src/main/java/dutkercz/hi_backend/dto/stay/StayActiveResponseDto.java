@@ -12,6 +12,7 @@ public record StayActiveResponseDto(
         ClientResponseDto client,
         Integer totalGuests,
         BigDecimal dailyPrice,
+        BigDecimal paidPrice,
         LocalDateTime checkIn,
         List<StayGuestDto> stayGuests
 ) {

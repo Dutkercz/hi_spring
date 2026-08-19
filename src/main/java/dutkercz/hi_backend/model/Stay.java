@@ -30,12 +30,13 @@ public class Stay {
     @ManyToOne
     private Room room;
 
-    private BigDecimal dailyPrice; //definido pelo numero de hospedes
-    private BigDecimal partialPrice; //usado se houver alteração no numero de hospedes
-    private BigDecimal totalPrice; // total na hora do checkout (dayliPrice * totalDaily + partialPrice)
+    private BigDecimal dailyPrice;
+    private BigDecimal paidPrice;
+    private BigDecimal totalPrice;
+    private Boolean isPaid;
 
     private Integer totalGuests;
-    private Integer totalDaily; //settar em 1 apos um calculo de partialPrice
+    private Long dailyRates;
 
     @Enumerated(EnumType.STRING)
     private StayStatus stayStatus = StayStatus.CURRENT;

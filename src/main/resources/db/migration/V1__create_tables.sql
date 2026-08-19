@@ -36,10 +36,11 @@ CREATE TABLE tb_stays(
     check_in TIMESTAMP NOT NULL,
     check_out TIMESTAMP,
     daily_price DECIMAL(10, 2),
-    partial_price DECIMAL(10, 2),
+    paid_price DECIMAL(10, 2),
     total_price DECIMAL(10, 2),
+    is_paid TINYINT,
     total_guests int,
-    total_daily int,
+    daily_rates int,
     stay_status VARCHAR(50) NOT NULL,
 
     CONSTRAINT fk_stays_client FOREIGN KEY (client_id) REFERENCES tb_clients(id),
