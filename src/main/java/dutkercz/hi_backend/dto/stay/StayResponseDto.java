@@ -14,6 +14,7 @@ public record StayResponseDto(
         BigDecimal paidPrice,
         BigDecimal remainingPrice,
         BigDecimal totalPrice,
+        Boolean isPaid,
         String stayStatus
 ) {
     public record ClientSummaryResponse(Long id, String firstName, String lastName) {}

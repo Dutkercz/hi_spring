@@ -1,5 +1,7 @@
 package dutkercz.hi_backend.controller;
 
+import dutkercz.hi_backend.dto.DailyPricesDto;
+import dutkercz.hi_backend.dto.DailyPricesResponse;
 import dutkercz.hi_backend.dto.stay.StayPayment;
 import dutkercz.hi_backend.dto.stay.StayRequestDto;
 import dutkercz.hi_backend.dto.stay.StayResponseDto;
@@ -29,5 +31,22 @@ public class StayController {
     public ResponseEntity<StayResponseDto> addPaymentAmount(@PathVariable Long id, @RequestBody StayPayment amount) {
         return ResponseEntity.ok(stayService.addPayment(id, amount));
     }
+
+    @GetMapping("/daily-prices")
+    public ResponseEntity<DailyPricesResponse> dailyPrice(){
+        return ResponseEntity.ok(stayService.dailyPrices());
+    }
+
+    @PatchMapping("/checkout/{id}")
+    public ResponseEntity<Void> stayCheckout(@PathVariable Long id){
+        stayService.checkout(id);
+        return  ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/update-daily-rates/{id}")
+    public ResponseEntity<StayResponseDto> updateStay(@PathVariable Long id){
+        return ResponseEntity.ok(stayService.updateDailyRates(id));
+    }
+
 }
 

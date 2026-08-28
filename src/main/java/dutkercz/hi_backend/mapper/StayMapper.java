@@ -1,8 +1,10 @@
 package dutkercz.hi_backend.mapper;
 
+import dutkercz.hi_backend.dto.stay.StayPayment;
 import dutkercz.hi_backend.dto.stay.StayRequestDto;
 import dutkercz.hi_backend.dto.stay.StayResponseDto;
 import dutkercz.hi_backend.model.Client;
+import dutkercz.hi_backend.model.Payment;
 import dutkercz.hi_backend.model.Room;
 import dutkercz.hi_backend.model.Stay;
 import dutkercz.hi_backend.model.enums.StayStatus;
@@ -44,11 +46,10 @@ public interface StayMapper {
             stay.setPaidPrice(stay.getTotalPrice());
             stay.setIsPaid(true);
        }else {
-
            stay.setIsPaid(false);
            stay.setPaidPrice(BigDecimal.ZERO);
-
        }
     }
+    Payment toPaymentEntity(StayPayment stayPayment);
 }
 

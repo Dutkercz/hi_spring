@@ -44,6 +44,9 @@ public class Stay {
 
     private LocalDateTime checkOut;
 
+    @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Payment> payments;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "stay")
     private List<StayGuest> stayGuests = new ArrayList<>();
 
@@ -57,7 +60,13 @@ public class Stay {
         stayGuest.setStay(null);
     }
 
-    public void addPaymentAmount(BigDecimal amount) {
-        this.paidPrice = this.paidPrice.add(amount);
+    public void addPaymentAmount(Payment payment) {
+        this.paidPrice = this.paidPrice.add(payment.getAmount());
+        payments.add(payment);
+        if (this.paidPrice.compareTo(totalPrice) == 0) {
+            isPaid = true;
+        }
+        payment.setStay(this);
     }
+
 }
