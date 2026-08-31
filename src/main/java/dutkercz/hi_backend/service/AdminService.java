@@ -1,6 +1,7 @@
 package dutkercz.hi_backend.service;
 
 import dutkercz.hi_backend.dto.DailyPricesDto;
+import dutkercz.hi_backend.dto.admin.MonthlyResume;
 import dutkercz.hi_backend.model.Stay;
 import dutkercz.hi_backend.repository.DailyPriceRepository;
 import dutkercz.hi_backend.repository.StayRepository;
@@ -34,7 +35,7 @@ public class AdminService {
         dailyPrices.setFourGuestPrice(request.fourGuestPrice());
     }
 
-    public BigDecimal totalStaysAmountPerMonth(int year, int month) {
+    public MonthlyResume totalStaysAmountPerMonth(int year, int month) {
         var initDate = LocalDate.of( year, month, 1 );
         var firstDay = initDate.atTime(12, 1, 0);
         var lastDay = initDate.with(TemporalAdjusters.lastDayOfMonth())
@@ -45,7 +46,7 @@ public class AdminService {
         BigDecimal total = stays.stream().map(Stay::getPaidPrice)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         log.info("Total stays amount: {}", total);
-        return total;
+        return new MonthlyResume(total);
     }
 
 }

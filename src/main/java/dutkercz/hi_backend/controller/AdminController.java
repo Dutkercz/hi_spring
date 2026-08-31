@@ -1,6 +1,7 @@
 package dutkercz.hi_backend.controller;
 
 import dutkercz.hi_backend.dto.DailyPricesDto;
+import dutkercz.hi_backend.dto.admin.MonthlyResume;
 import dutkercz.hi_backend.service.AdminService;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
@@ -24,8 +25,8 @@ public class AdminController {
     }
 
     @GetMapping("/month-resume")
-    public ResponseEntity<BigDecimal> monthResume(@PathParam(value = "year") Integer year,
-                                                  @PathParam(value = "month") Integer month){
+    public ResponseEntity<MonthlyResume> monthResume(@PathParam(value = "year") Integer year,
+                                                     @PathParam(value = "month") Integer month){
         return ResponseEntity.ok(adminService.totalStaysAmountPerMonth(year, month));
     }
 }

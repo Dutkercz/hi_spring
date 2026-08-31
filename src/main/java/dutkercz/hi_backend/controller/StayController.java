@@ -2,6 +2,7 @@ package dutkercz.hi_backend.controller;
 
 import dutkercz.hi_backend.dto.DailyPricesDto;
 import dutkercz.hi_backend.dto.DailyPricesResponse;
+import dutkercz.hi_backend.dto.room.RoomMonthlyStatus;
 import dutkercz.hi_backend.dto.stay.StayPayment;
 import dutkercz.hi_backend.dto.stay.StayRequestDto;
 import dutkercz.hi_backend.dto.stay.StayResponseDto;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/stays")
@@ -48,5 +50,9 @@ public class StayController {
         return ResponseEntity.ok(stayService.updateDailyRates(id));
     }
 
+    @GetMapping("/status-mensal")
+    public ResponseEntity<List<RoomMonthlyStatus>> stayStatusMensal(){
+        return ResponseEntity.ok(stayService.roomMonthlyStatus(2026, 8));
+    }
 }
 

@@ -1,6 +1,7 @@
 package dutkercz.hi_backend.service;
 
 import dutkercz.hi_backend.dto.room.RoomForCardDto;
+import dutkercz.hi_backend.dto.room.RoomMonthlyStatus;
 import dutkercz.hi_backend.dto.room.RoomResponseDto;
 import dutkercz.hi_backend.mapper.RoomMapper;
 import dutkercz.hi_backend.model.Room;

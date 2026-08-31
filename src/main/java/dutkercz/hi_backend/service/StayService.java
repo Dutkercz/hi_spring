@@ -1,6 +1,7 @@
 package dutkercz.hi_backend.service;
 
 import dutkercz.hi_backend.dto.DailyPricesResponse;
+import dutkercz.hi_backend.dto.room.RoomMonthlyStatus;
 import dutkercz.hi_backend.dto.stay.StayPayment;
 import dutkercz.hi_backend.dto.stay.StayRequestDto;
 import dutkercz.hi_backend.dto.stay.StayResponseDto;
@@ -20,12 +21,15 @@ import dutkercz.hi_backend.service.validations.room.RoomValidation;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -136,6 +140,26 @@ public class StayService {
         stay.setDailyRates(actualDailyRates);
         stay.setTotalPrice(stay.getDailyPrice().multiply(BigDecimal.valueOf(actualDailyRates)));
         return stayMapper.toResponse(stay);
+    }
+
+    public List<RoomMonthlyStatus> roomMonthlyStatus(Integer year, Integer month ) {
+        var initDate = LocalDate.of(year, month, 1);
+
+        var firstDay = initDate.atTime(12, 1, 0);
+        var lastDay = initDate.with(TemporalAdjusters.lastDayOfMonth()).atTime(11 , 59, 0);
+
+        var stays =  stayRepository.findAllByCheckInBetween(firstDay, lastDay);
+        List<RoomMonthlyStatus> roomStatusList = new ArrayList<>();
+
+        for (Stay stay : stays) {
+            var checkin = stay.getCheckIn();
+            var checkout = stay.getCheckOut();
+            var roomNumber = stay.getRoom().getRoomNumber();
+            RoomMonthlyStatus roomStatus = new RoomMonthlyStatus(roomNumber, checkin, checkout);
+            roomStatusList.add(roomStatus);
+        }
+        log.info("Resultado {}", roomStatusList );
+        return roomStatusList;
     }
 }
 
