@@ -1,19 +1,24 @@
 package dutkercz.hi_backend.controller;
 
-import dutkercz.hi_backend.dto.DailyPricesDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import dutkercz.hi_backend.dto.DailyPricesResponse;
-import dutkercz.hi_backend.dto.room.RoomMonthlyStatus;
+import dutkercz.hi_backend.dto.room.MonthlyOccupationDto;
+import dutkercz.hi_backend.dto.stay.RefundDto;
 import dutkercz.hi_backend.dto.stay.StayPayment;
 import dutkercz.hi_backend.dto.stay.StayRequestDto;
 import dutkercz.hi_backend.dto.stay.StayResponseDto;
 import dutkercz.hi_backend.service.StayService;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/stays")
 @RequiredArgsConstructor
@@ -50,9 +55,17 @@ public class StayController {
         return ResponseEntity.ok(stayService.updateDailyRates(id));
     }
 
-    @GetMapping("/status-mensal")
-    public ResponseEntity<List<RoomMonthlyStatus>> stayStatusMensal(){
-        return ResponseEntity.ok(stayService.roomMonthlyStatus(2026, 8));
+    @GetMapping("/monthly-occupation")
+    public ResponseEntity<List<MonthlyOccupationDto>> monthlyOccupationBoard(@PathParam(value = "year") Integer year,
+                                                                             @PathParam(value = "month") Integer month){
+        log.info("data {} / {}", year, month);
+        return ResponseEntity.ok(stayService.roomMonthlyStatus(year, month));
+    }
+
+    @PatchMapping("/refund/{id}")
+    public ResponseEntity<StayResponseDto> refundStayAmount(@PathVariable Long id, @RequestBody RefundDto refundDto){
+        log.info("Values {} / {}", id, refundDto);
+        return ResponseEntity.ok(stayService.refundStayAmount(id, refundDto));
     }
 }
 

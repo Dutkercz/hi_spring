@@ -1,7 +1,8 @@
 package dutkercz.hi_backend.service;
 
 import dutkercz.hi_backend.dto.DailyPricesResponse;
-import dutkercz.hi_backend.dto.room.RoomMonthlyStatus;
+import dutkercz.hi_backend.dto.room.MonthlyOccupationDto;
+import dutkercz.hi_backend.dto.stay.RefundDto;
 import dutkercz.hi_backend.dto.stay.StayPayment;
 import dutkercz.hi_backend.dto.stay.StayRequestDto;
 import dutkercz.hi_backend.dto.stay.StayResponseDto;
@@ -13,7 +14,6 @@ import dutkercz.hi_backend.model.*;
 import dutkercz.hi_backend.model.enums.RoomStatusEnum;
 import dutkercz.hi_backend.model.enums.StayStatus;
 import dutkercz.hi_backend.repository.DailyPriceRepository;
-import dutkercz.hi_backend.repository.RoomRepository;
 import dutkercz.hi_backend.repository.StayRepository;
 import dutkercz.hi_backend.service.utils.HelperStayCalcs;
 import dutkercz.hi_backend.service.validations.client.ClientValidation;
@@ -21,6 +21,7 @@ import dutkercz.hi_backend.service.validations.room.RoomValidation;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +43,6 @@ public class StayService {
     private final StayRepository stayRepository;
     private final DailyPriceRepository dailyPriceRepository;
     private final DailyPriceMapper dailyPriceMapper;
-    private final RoomRepository roomRepository;
 
     @Transactional
     public StayResponseDto newStay(StayRequestDto request) {
@@ -139,26 +139,49 @@ public class StayService {
         long actualDailyRates = HelperStayCalcs.calcDailyRates(stay.getCheckIn(), actualCheckout);
         stay.setDailyRates(actualDailyRates);
         stay.setTotalPrice(stay.getDailyPrice().multiply(BigDecimal.valueOf(actualDailyRates)));
+        if (stay.getPaidPrice().compareTo(stay.getTotalPrice()) == 0) {
+           stay.setIsPaid(true);
+        }
         return stayMapper.toResponse(stay);
     }
 
-    public List<RoomMonthlyStatus> roomMonthlyStatus(Integer year, Integer month ) {
+    public List<MonthlyOccupationDto> roomMonthlyStatus(Integer year, Integer month) {
         var initDate = LocalDate.of(year, month, 1);
 
         var firstDay = initDate.atTime(12, 1, 0);
         var lastDay = initDate.with(TemporalAdjusters.lastDayOfMonth()).atTime(11 , 59, 0);
 
         var stays =  stayRepository.findAllByCheckInBetween(firstDay, lastDay);
-        List<RoomMonthlyStatus> roomStatusList = new ArrayList<>();
+
+        return getMonthlyOccupationDtos(stays);
+    }
+
+
+    @Transactional
+    public StayResponseDto refundStayAmount(Long id, RefundDto refundDto) {
+        var stay = stayRepository.findById(id).orElseThrow(() ->
+                               new EntityNotFoundException("Stay with id " + id + " not found"));
+        var paidAmount = stay.getPaidPrice();
+
+        if(refundDto.amount().compareTo(paidAmount) > 0){
+            throw new PaymentException("Payment amount exceeds total paid amount");
+        }
+        stay.setPaidPrice(paidAmount.subtract(refundDto.amount()));
+        stay.setIsPaid(stay.getPaidPrice().compareTo(stay.getTotalPrice()) == 0);
+        return stayMapper.toResponse(stay);
+    }
+
+    private static List<MonthlyOccupationDto> getMonthlyOccupationDtos(List<Stay> stays) {
+        List<MonthlyOccupationDto> roomStatusList = new ArrayList<>();
 
         for (Stay stay : stays) {
             var checkin = stay.getCheckIn();
             var checkout = stay.getCheckOut();
             var roomNumber = stay.getRoom().getRoomNumber();
-            RoomMonthlyStatus roomStatus = new RoomMonthlyStatus(roomNumber, checkin, checkout);
+            var clientName = stay.getClient().getFirstName() + " " + stay.getClient().getLastName();
+            MonthlyOccupationDto roomStatus = new MonthlyOccupationDto(roomNumber, checkin, checkout, clientName);
             roomStatusList.add(roomStatus);
         }
-        log.info("Resultado {}", roomStatusList );
         return roomStatusList;
     }
 }

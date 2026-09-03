@@ -1,7 +1,6 @@
 package dutkercz.hi_backend.service;
 
 import dutkercz.hi_backend.dto.room.RoomForCardDto;
-import dutkercz.hi_backend.dto.room.RoomMonthlyStatus;
 import dutkercz.hi_backend.dto.room.RoomResponseDto;
 import dutkercz.hi_backend.mapper.RoomMapper;
 import dutkercz.hi_backend.model.Room;
@@ -14,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
