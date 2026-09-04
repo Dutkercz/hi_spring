@@ -1,5 +1,7 @@
 package dutkercz.hi_backend.dto;
 
+import dutkercz.hi_backend.model.DailyPrices;
+
 import java.math.BigDecimal;
 
 public record DailyPricesDto(
@@ -8,4 +10,7 @@ public record DailyPricesDto(
         BigDecimal threeGuestPrice,
         BigDecimal fourGuestPrice
 ) {
+    public DailyPricesDto(DailyPrices x) {
+        this(x.getOneGuestPrice(), x.getTwoGuestPrice(), x.getThreeGuestPrice(), x.getFourGuestPrice());
+    }
 }

@@ -2,6 +2,7 @@ package dutkercz.hi_backend.controller;
 
 import dutkercz.hi_backend.dto.room.RoomForCardDto;
 import dutkercz.hi_backend.dto.room.RoomResponseDto;
+import dutkercz.hi_backend.dto.room.RoomUpdateDto;
 import dutkercz.hi_backend.service.RoomService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class RoomController {
     }
 
     @GetMapping
-    @RateLimiter(name = "backendApi", fallbackMethod = "rateLimiterFallback")
+    //@RateLimiter(name = "backendApi", fallbackMethod = "rateLimiterFallback")
     public ResponseEntity<List<RoomForCardDto>> getAllRooms(){
         return ResponseEntity.ok().body(roomService.getAllRooms());
     }
@@ -29,6 +30,11 @@ public class RoomController {
     @PutMapping("/add-daily/{id}")
     public ResponseEntity<RoomResponseDto> addDaily(@PathVariable Long id){
         return ResponseEntity.ok(roomService.addDaily(id));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<RoomResponseDto> updateRoomConfig(@PathVariable Long id, @RequestBody RoomUpdateDto updateDto){
+        return ResponseEntity.ok(roomService.updateRoomConfig(id, updateDto));
     }
 
     public ResponseEntity<?> rateLimiterFallback(Throwable t){

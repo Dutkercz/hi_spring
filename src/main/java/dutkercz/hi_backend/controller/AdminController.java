@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -17,6 +18,11 @@ import java.math.BigDecimal;
 public class AdminController {
 
     private final AdminService adminService;
+
+    @GetMapping("/daily-prices")
+    public ResponseEntity<DailyPricesDto> getDailyPrices(){
+        return ResponseEntity.ok(adminService.getDailyPrices());
+    }
 
     @PatchMapping
     public ResponseEntity<Void> adjustDailyPrice(@RequestBody @Valid DailyPricesDto request){

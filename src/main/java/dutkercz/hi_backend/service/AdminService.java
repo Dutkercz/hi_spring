@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -49,4 +50,7 @@ public class AdminService {
         return new MonthlyResume(total);
     }
 
+    public DailyPricesDto getDailyPrices() {
+        return new DailyPricesDto(dailyPriceRepository.findAll().getLast());
+    }
 }

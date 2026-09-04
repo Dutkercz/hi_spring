@@ -2,6 +2,7 @@ package dutkercz.hi_backend.service;
 
 import dutkercz.hi_backend.dto.room.RoomForCardDto;
 import dutkercz.hi_backend.dto.room.RoomResponseDto;
+import dutkercz.hi_backend.dto.room.RoomUpdateDto;
 import dutkercz.hi_backend.mapper.RoomMapper;
 import dutkercz.hi_backend.model.Room;
 import dutkercz.hi_backend.model.Stay;
@@ -51,5 +52,16 @@ public class RoomService {
                        .orElseThrow(() -> new EntityNotFoundException("No stays actives for this room"));
         stayService.addStay(stay.getId());
         return roomMapper.toResponseRoomDto(room);
+    }
+
+    @Transactional
+    public RoomResponseDto updateRoomConfig(Long id, RoomUpdateDto updateDto) {
+        var room = getRoomById(id);
+        room.setDoubleBeds(updateDto.doubleBeds() != null && updateDto.doubleBeds() >= 0 ?
+                           updateDto.doubleBeds() : room.getDoubleBeds());
+        room.setSingleBeds(updateDto.singleBeds() != null && updateDto.singleBeds() >= 0 ?
+                           updateDto.singleBeds() : room.getSingleBeds());
+
+        return  roomMapper.toResponseRoomDto(room);
     }
 }
