@@ -3,6 +3,7 @@ package dutkercz.hi_backend.controller;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import dutkercz.hi_backend.dto.DailyPricesResponse;
 import dutkercz.hi_backend.dto.room.MonthlyOccupationDto;
+import dutkercz.hi_backend.dto.room.RoomResponseDto;
 import dutkercz.hi_backend.dto.stay.RefundDto;
 import dutkercz.hi_backend.dto.stay.StayPayment;
 import dutkercz.hi_backend.dto.stay.StayRequestDto;
@@ -32,6 +33,11 @@ public class StayController {
         StayResponseDto responseDto = stayService.newStay(requestDto);
         URI uri = builder.path("/api/stays/{id}").buildAndExpand(responseDto.id()).toUri();
         return ResponseEntity.created(uri).body(responseDto);
+    }
+
+    @PutMapping("/add-daily/{id}")
+    public ResponseEntity<StayResponseDto> addDaily(@PathVariable Long id){
+        return ResponseEntity.ok(stayService.addStay(id));
     }
 
     @PatchMapping("/{id}/add-payment-amount")

@@ -27,10 +27,6 @@ public class RoomController {
         return ResponseEntity.ok().body(roomService.getAllRooms());
     }
 
-    @PutMapping("/add-daily/{id}")
-    public ResponseEntity<RoomResponseDto> addDaily(@PathVariable Long id){
-        return ResponseEntity.ok(roomService.addDaily(id));
-    }
 
     @PatchMapping("/{id}")
     public ResponseEntity<RoomResponseDto> updateRoomConfig(@PathVariable Long id, @RequestBody RoomUpdateDto updateDto){

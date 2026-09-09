@@ -46,15 +46,6 @@ public class RoomService {
     }
 
     @Transactional
-    public RoomResponseDto addDaily(Long id) {
-        var room = getRoomById(id);
-        var stay = room.getStays().stream().filter(s -> s.getStayStatus() == StayStatus.CURRENT).findFirst()
-                       .orElseThrow(() -> new EntityNotFoundException("No stays actives for this room"));
-        stayService.addStay(stay.getId());
-        return roomMapper.toResponseRoomDto(room);
-    }
-
-    @Transactional
     public RoomResponseDto updateRoomConfig(Long id, RoomUpdateDto updateDto) {
         var room = getRoomById(id);
         room.setDoubleBeds(updateDto.doubleBeds() != null && updateDto.doubleBeds() >= 0 ?

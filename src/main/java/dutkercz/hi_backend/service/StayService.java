@@ -2,6 +2,7 @@ package dutkercz.hi_backend.service;
 
 import dutkercz.hi_backend.dto.DailyPricesResponse;
 import dutkercz.hi_backend.dto.room.MonthlyOccupationDto;
+import dutkercz.hi_backend.dto.room.RoomResponseDto;
 import dutkercz.hi_backend.dto.stay.RefundDto;
 import dutkercz.hi_backend.dto.stay.StayPayment;
 import dutkercz.hi_backend.dto.stay.StayRequestDto;
@@ -78,7 +79,7 @@ public class StayService {
 
 
     @Transactional
-    public void addStay(Long id) {
+    public StayResponseDto addStay(Long id) {
         var stay = stayRepository.findById(id).orElseThrow(() ->
                                             new EntityNotFoundException("Stay with id " + id + " not found"));
         stay.setCheckOut(stay.getCheckOut().plusDays(1));
@@ -86,6 +87,7 @@ public class StayService {
         stay.setDailyRates(dailyRates);
         stay.setIsPaid(false);
         stay.setTotalPrice(stay.getDailyPrice().multiply(BigDecimal.valueOf(dailyRates)));
+        return stayMapper.toResponse(stay);
     }
 
     @Transactional
