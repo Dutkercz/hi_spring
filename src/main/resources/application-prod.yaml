@@ -2,7 +2,11 @@ spring:
   application:
     name: hi
   profiles:
-    active: "prod"
+    active: "mysql"
+  datasource:
+    url: "jdbc:mysql://${MYSQLUSER}:${MYSQL_ROOT_PASSWORD}@${RAILWAY_TCP_PROXY_DOMAIN}:${RAILWAY_TCP_PROXY_PORT}/${MYSQL_DATABASE}"
+    username: "${MYSQLUSER}"
+    password: "${MYSQL_ROOT_PASSWORD}"
 resilience4j:
   ratelimiter:
     instances:
