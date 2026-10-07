@@ -1,8 +1,9 @@
-package dutkercz.hi_backend.service.validations.room;
+package dutkercz.hi_backend.service.validations;
 
 import dutkercz.hi_backend.dto.stay.StayRequestDto;
 import dutkercz.hi_backend.model.Room;
 import dutkercz.hi_backend.repository.RoomRepository;
+import dutkercz.hi_backend.service.validations.room.RoomValidations;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

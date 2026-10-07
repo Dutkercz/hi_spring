@@ -3,12 +3,12 @@ package dutkercz.hi_backend.service;
 import dutkercz.hi_backend.dto.room.RoomForCardDto;
 import dutkercz.hi_backend.dto.room.RoomResponseDto;
 import dutkercz.hi_backend.dto.room.RoomUpdateDto;
+import dutkercz.hi_backend.exceptions.ResourceNotFoundException;
 import dutkercz.hi_backend.mapper.RoomMapper;
 import dutkercz.hi_backend.model.Room;
 import dutkercz.hi_backend.model.Stay;
 import dutkercz.hi_backend.model.enums.StayStatus;
 import dutkercz.hi_backend.repository.RoomRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,7 +42,7 @@ public class RoomService {
 
     public Room getRoomById(Long id) {
         return roomRepository.findById(id)
-                             .orElseThrow(() -> new EntityNotFoundException("Room not found with id: " + id));
+                             .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + id));
     }
 
     @Transactional

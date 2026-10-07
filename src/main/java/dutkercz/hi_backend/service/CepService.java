@@ -20,7 +20,7 @@ public class CepService {
                              .retrieve()
                              .body(CepResponseData.class);
         } catch (HttpClientErrorException e) {
-            throw new CepNotExistException("Cep not exist or is incorrect " + e.getMessage());
+            throw new CepNotExistException("Cep not exist or is incorrect");
         }
     }
 }

@@ -2,10 +2,10 @@ package dutkercz.hi_backend.service;
 
 import dutkercz.hi_backend.dto.client.ClientRequestDto;
 import dutkercz.hi_backend.dto.client.ClientResponseDto;
+import dutkercz.hi_backend.exceptions.ResourceNotFoundException;
 import dutkercz.hi_backend.mapper.ClientMapper;
 import dutkercz.hi_backend.model.Client;
 import dutkercz.hi_backend.repository.ClientRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,6 +39,6 @@ public class ClientService {
 
     public Client getByCpf(String cpf){
         return clientRepository.findByCpf(cpf).orElseThrow(
-                () -> new EntityNotFoundException("Client not found with cpf " + cpf));
+                () -> new ResourceNotFoundException("Client not found with cpf " + cpf));
     }
 }

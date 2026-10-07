@@ -21,9 +21,11 @@ public interface StayMapper {
 
     @Mapping(target = "client", source = "client")
     @Mapping(target = "room", source = "room")
+    @Mapping(target = "remainingPrice", expression = "java(stay.getTotalPrice().subtract(stay.getPaidPrice()))")
     StayResponseDto toResponse(Stay stay);
 
     StayResponseDto.ClientSummaryResponse toClientSummary(Client client);
+
     StayResponseDto.RoomSummaryResponse toRoomSummary(Room room);
 
     @Mapping(target = "id", ignore = true)
@@ -37,19 +39,19 @@ public interface StayMapper {
     @Mapping(target = "stayGuests", ignore = true)
     @Mapping(target = "dailyPrice", source = "dailyPrice")
     Stay toEntity(StayRequestDto request, Client client, Room room, LocalDateTime checkin,
-                  LocalDateTime checkout, BigDecimal dailyPrice, BigDecimal totalPrice,
-                  Long dailyRates, StayStatus status);
+            LocalDateTime checkout, BigDecimal dailyPrice, BigDecimal totalPrice,
+            Long dailyRates, StayStatus status);
 
     @AfterMapping
-    default void afterMapping(StayRequestDto request, @MappingTarget Stay stay){
-       if (request.isPaid()){
+    default void afterMapping(StayRequestDto request, @MappingTarget Stay stay) {
+        if (request.isPaid()) {
             stay.setPaidPrice(stay.getTotalPrice());
             stay.setIsPaid(true);
-       }else {
-           stay.setIsPaid(false);
-           stay.setPaidPrice(BigDecimal.ZERO);
-       }
+        } else {
+            stay.setIsPaid(false);
+            stay.setPaidPrice(BigDecimal.ZERO);
+        }
     }
+
     Payment toPaymentEntity(StayPayment stayPayment);
 }
-

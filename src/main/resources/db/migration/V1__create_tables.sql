@@ -12,7 +12,7 @@ CREATE TABLE tb_clients(
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     cpf VARCHAR(11) NOT NULL UNIQUE,
-    cnpj VARCHAR(18) NOT NULL,
+    cnpj VARCHAR(18),
     phone_number VARCHAR(20) NOT NULL,
     status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',
     created_at TIMESTAMP NOT NULL

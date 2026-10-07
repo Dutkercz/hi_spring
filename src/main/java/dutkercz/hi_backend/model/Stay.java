@@ -14,8 +14,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tb_stays")
 @ToString
+@Table(name = "tb_stays")
 public class Stay {
 
     @Id

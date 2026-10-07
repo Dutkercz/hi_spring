@@ -1,15 +1,13 @@
 package dutkercz.hi_backend.service;
 
-import dutkercz.hi_backend.dto.DailyPricesResponse;
 import dutkercz.hi_backend.dto.room.MonthlyOccupationDto;
-import dutkercz.hi_backend.dto.room.RoomResponseDto;
 import dutkercz.hi_backend.dto.stay.RefundDto;
 import dutkercz.hi_backend.dto.stay.StayPayment;
 import dutkercz.hi_backend.dto.stay.StayRequestDto;
 import dutkercz.hi_backend.dto.stay.StayResponseDto;
 import dutkercz.hi_backend.exceptions.BusinessException;
 import dutkercz.hi_backend.exceptions.PaymentException;
-import dutkercz.hi_backend.mapper.DailyPriceMapper;
+import dutkercz.hi_backend.exceptions.ResourceNotFoundException;
 import dutkercz.hi_backend.mapper.StayMapper;
 import dutkercz.hi_backend.model.*;
 import dutkercz.hi_backend.model.enums.RoomStatusEnum;
@@ -17,12 +15,10 @@ import dutkercz.hi_backend.model.enums.StayStatus;
 import dutkercz.hi_backend.repository.DailyPriceRepository;
 import dutkercz.hi_backend.repository.StayRepository;
 import dutkercz.hi_backend.service.utils.HelperStayCalcs;
-import dutkercz.hi_backend.service.validations.client.ClientValidation;
-import dutkercz.hi_backend.service.validations.room.RoomValidation;
-import jakarta.persistence.EntityNotFoundException;
+import dutkercz.hi_backend.service.validations.ClientValidation;
+import dutkercz.hi_backend.service.validations.RoomValidation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +39,6 @@ public class StayService {
     private final RoomValidation roomValidation;
     private final StayRepository stayRepository;
     private final DailyPriceRepository dailyPriceRepository;
-    private final DailyPriceMapper dailyPriceMapper;
 
     @Transactional
     public StayResponseDto newStay(StayRequestDto request) {
@@ -81,7 +76,7 @@ public class StayService {
     @Transactional
     public StayResponseDto addStay(Long id) {
         var stay = stayRepository.findById(id).orElseThrow(() ->
-                                            new EntityNotFoundException("Stay with id " + id + " not found"));
+                                            new ResourceNotFoundException("Stay with id " + id + " not found"));
         stay.setCheckOut(stay.getCheckOut().plusDays(1));
         long dailyRates = HelperStayCalcs.calcDailyRates(stay.getCheckIn(), stay.getCheckOut());
         stay.setDailyRates(dailyRates);
@@ -93,7 +88,7 @@ public class StayService {
     @Transactional
     public StayResponseDto addPayment(Long id, StayPayment paymentRequest) {
         var stay = stayRepository.findById(id).orElseThrow(() ->
-                                           new EntityNotFoundException("Stay with id " + id + " not found"));
+                                           new ResourceNotFoundException("Stay with id " + id + " not found"));
         if (paymentRequest.amount().compareTo(stay.getTotalPrice()) > 0) {
             throw new PaymentException("This payment amount exceeds daily total amount");
         }
@@ -106,15 +101,10 @@ public class StayService {
         return stayMapper.toResponse(stay);
     }
 
-    public DailyPricesResponse dailyPrices() {
-        DailyPrices last = dailyPriceRepository.findAll().getLast();
-        return dailyPriceMapper.toResponse(last);
-    }
-
     @Transactional
     public void checkout(Long id) {
         Stay stay = stayRepository.findById(id).orElseThrow(() ->
-                                new EntityNotFoundException("Stay with id " + id + " not found"));
+                                new ResourceNotFoundException("Stay with id " + id + " not found"));
         Room room = stay.getRoom();
 
         long actualDailyRates = HelperStayCalcs.calcDailyRates(stay.getCheckIn(),
@@ -135,7 +125,7 @@ public class StayService {
     @Transactional
     public StayResponseDto updateDailyRates(Long id) {
         var stay = stayRepository.findById(id).orElseThrow(() ->
-                                                   new EntityNotFoundException("Stay with id " + id + " not found"));
+                                                   new ResourceNotFoundException("Stay with id " + id + " not found"));
         var actualCheckout =  HelperStayCalcs.adjustCheckout(LocalDateTime.now());
         stay.setCheckOut(actualCheckout);
         long actualDailyRates = HelperStayCalcs.calcDailyRates(stay.getCheckIn(), actualCheckout);
@@ -162,7 +152,7 @@ public class StayService {
     @Transactional
     public StayResponseDto refundStayAmount(Long id, RefundDto refundDto) {
         var stay = stayRepository.findById(id).orElseThrow(() ->
-                               new EntityNotFoundException("Stay with id " + id + " not found"));
+                               new ResourceNotFoundException("Stay with id " + id + " not found"));
         var paidAmount = stay.getPaidPrice();
 
         if(refundDto.amount().compareTo(paidAmount) > 0){
