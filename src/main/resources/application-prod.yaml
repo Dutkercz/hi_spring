@@ -1,3 +1,4 @@
+
 spring:
   application:
     name: hi
@@ -14,3 +15,6 @@ resilience4j:
         limit-for-period: 10 #numero de requests permitidos
         limit-refresh-period: 60s #tempo até o refresh dos tokens
         timeout-duration: 0s #tempo em que a trhead espera a disponibilidade de tokens antes de falhar
+server:
+  port: "${PORT:8080}"
+  address: ".0.0.0.0"
