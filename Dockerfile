@@ -10,4 +10,5 @@ FROM eclipse-temurin:21-jre-alpine
 
 COPY --from=build /app/target/hi_backend-0.0.1-SNAPSHOT.jar  /app/app/jar
 WORKDIR /app
-CMD java -Dserver.port=$PORT -jar app.jar
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]
