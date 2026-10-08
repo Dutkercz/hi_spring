@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: "jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQLDATABASE}"
+    url: "jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQL_DATABASE}"
     username: "${MYSQLUSER}"
     password: "${MYSQL_ROOT_PASSWORD}"
 resilience4j:
