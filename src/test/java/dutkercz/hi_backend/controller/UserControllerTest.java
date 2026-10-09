@@ -42,7 +42,7 @@ class UserControllerTest extends DefaultAbstractContainerTest {
     @Test
     @Transactional
     void shouldRegisterUserWithSuccess() throws Exception {
-        var userRequest = new UserRequestDto("emailteste@email.com", "1234Abcd");
+        var userRequest = new UserRequestDto("emailteste@email.com", "1234Abcd", "cris");
 
         mockMvc.perform(post("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
                                              .content(userJacksonTester.write(userRequest).getJson()))
@@ -56,10 +56,11 @@ class UserControllerTest extends DefaultAbstractContainerTest {
     @Description("Should fail when try register a user with EMAIL already registered")
     void shouldNotRegisterUserWithSuccess() throws Exception {
         userRepository.save(
-                new User(null, "emailteste@email.com", "1234Abcd", true, LocalDateTime.now(), null, UserRole.USER,
+                new User(null, "Cris", "file", "emailteste@email.com", "1234Abcd", true, LocalDateTime.now(), null,
+                         UserRole.USER,
                          null));
 
-        var userRequest = new UserRequestDto("emailteste@email.com", "1234Abcd");
+        var userRequest = new UserRequestDto("emailteste@email.com", "1234Abcd", "cris");
         mockMvc.perform(post("/api/v1/users")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(userJacksonTester.write(userRequest).getJson()))
@@ -71,7 +72,7 @@ class UserControllerTest extends DefaultAbstractContainerTest {
     @Transactional
     @Description("Should fail when try register a user with PW out of pattern")
     void shouldNotRegisterUserPwNotInPatterns() throws Exception {
-        var userRequest = new UserRequestDto("emailteste@email.com", "12d");
+        var userRequest = new UserRequestDto("emailteste@email.com", "12d", "cris");
         mockMvc.perform(post("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
                                              .content(userJacksonTester.write(userRequest).getJson()))
                .andExpect(status().isBadRequest());
@@ -82,7 +83,7 @@ class UserControllerTest extends DefaultAbstractContainerTest {
     @Transactional
     @Description("Should fail when try register a user with EMAIL out of pattern")
     void shouldNotRegisterUserEmailNotInPatterns() throws Exception {
-        var userRequest = new UserRequestDto("emailemail.com", "1234Abcd");
+        var userRequest = new UserRequestDto("emailemail.com", "1234Abcd",  "cris");
         mockMvc.perform(post("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
                                              .content(userJacksonTester.write(userRequest).getJson()))
                .andExpect(status().isBadRequest());
@@ -93,8 +94,8 @@ class UserControllerTest extends DefaultAbstractContainerTest {
     @Transactional
     @Description("Should return a USER successfully when it is find by an existing ID")
     void shouldReturnUserById() throws Exception {
-        User user = userRepository.save(
-                new User(null, "emailteste@email.com", "1234Abcd", true, LocalDateTime.now(), null, UserRole.USER,
+        User user = userRepository.save(new User(null,"cris", null, "emailteste@email.com",
+             "1234Abcd", true, LocalDateTime.now(), null, UserRole.USER,
                          null));
         var userId = user.getId();
 

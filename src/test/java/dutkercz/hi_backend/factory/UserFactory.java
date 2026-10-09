@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class UserFactory {
 
     public static User createUser(PasswordEncoder encoder) {
-        return  new User(null, "auth-test@email.com",
+        return  new User(null, "cris","string", "auth-test@email.com",
                          encoder.encode("StrongPass123"), true, LocalDateTime.now(),
                          null, UserRole.ADMIN, null);
     }

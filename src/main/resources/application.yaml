@@ -2,7 +2,7 @@ spring:
   application:
     name: hi
   profiles:
-    active: "prod"
+    active: "mysql"
 resilience4j:
   ratelimiter:
     instances:

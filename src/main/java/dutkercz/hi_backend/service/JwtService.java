@@ -20,6 +20,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.Date;
 import java.util.HexFormat;
 
@@ -28,6 +29,7 @@ import java.util.HexFormat;
 @Slf4j
 public class JwtService {
     private static final String SECRET_KEY = "batman-superman-flash-lanterna-HASH-256b";
+    private static final Duration REFRESH_TOKEN_VALIDITY = Duration.ofDays(1);
     private final UserRepository userRepository;
 
     @Transactional
@@ -52,9 +54,10 @@ public class JwtService {
     @Transactional
     public String generateRefreshToken(User user) {
         try {
+            var issuedAt = new Date();
             var refreshToken = Jwts.builder()
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 86400000))
+                .issuedAt(issuedAt)
+                .expiration(Date.from(issuedAt.toInstant().plus(REFRESH_TOKEN_VALIDITY)))
                 .claim("type", "refresh")
                 .subject(user.getEmail())
                 .signWith(getSingKey())
@@ -72,15 +75,9 @@ public class JwtService {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setMaxAge(259200);
+        cookie.setMaxAge(Math.toIntExact(REFRESH_TOKEN_VALIDITY.toSeconds()));
+        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
-        response.addHeader("Set-Cookie",
-                           "refreshToken=" + refreshToken + "; " +
-                           "Max-Age=259200; " +
-                           "Path=/; " +
-                           "SameSite=None; " +
-                           "Secure; " +
-                           "HttpOnly");
     }
 
     public String generateAccessToken(User user) {

@@ -9,6 +9,7 @@ public record UserRequestDto(
         @Email(message = "O campo email, aparenta não ser um email")
         String email,
         @Pattern(regexp = "^(?=.*\\d)(?=.*[A-Z])(?=.*[a-z]).{6,100}$")
-        String password
-) {
+        String password,
+        @NotBlank(message = "O campo nome não pode estar em branco")
+        String fullName) {
 }

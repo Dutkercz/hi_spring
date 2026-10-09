@@ -27,13 +27,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
-    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        try {
+       // try {
             String header = request.getHeader("Authorization");
             if (header == null) {
                 filterChain.doFilter(request, response);
@@ -51,17 +50,10 @@ public class JwtFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authUser);
                 }
             }
-            System.out.println("ANTES DO CHAIN FILTER ---------------------");
             filterChain.doFilter(request, response);
-            System.out.println("DPOIS DO CHAIN FILTER ++++++++++++++++++++");
-        }catch (JwtException e){
-            System.out.println("$EStou na exception do filtro");
-            e.printStackTrace();
-            throw e;
-//            var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
-//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-//            response.getWriter().write(objectMapper.writeValueAsString(problemDetail));
-        }
+        //}catch (JwtException e){
+//            System.out.println("Invalid token on filter chain");
+//           throw new JwtException(e.getMessage());
+        //}
     }
 }
