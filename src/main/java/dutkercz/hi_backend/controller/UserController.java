@@ -2,23 +2,19 @@ package dutkercz.hi_backend.controller;
 
 import dutkercz.hi_backend.dto.UserRequestDto;
 import dutkercz.hi_backend.dto.UserResponseDto;
-import dutkercz.hi_backend.model.User;
 import dutkercz.hi_backend.service.UserService;
 import jakarta.validation.Valid;
-import jdk.jfr.ContentType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.Files;
 

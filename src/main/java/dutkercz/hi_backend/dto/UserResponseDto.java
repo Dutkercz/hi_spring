@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import dutkercz.hi_backend.model.User;
 import dutkercz.hi_backend.model.enums.UserRole;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 public record UserResponseDto(
