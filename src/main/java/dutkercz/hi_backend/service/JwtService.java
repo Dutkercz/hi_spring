@@ -37,11 +37,9 @@ public class JwtService {
                                     HttpServletResponse response) throws NoSuchAlgorithmException {
         String receivedHashedToken = hashRefreshToken(receivedRefresh);
         var claims = validateRefreshToken(receivedRefresh);
-        var user = (User) userRepository.findByEmail(claims.getSubject());
+        var user = (User) userRepository.findByEmail(claims.getSubject()).orElseThrow(() ->
+                new ResourceNotFoundException("User not found"));
 
-        if (user == null) {
-            throw new ResourceNotFoundException("User not found");
-        }
         if(!receivedHashedToken.equals(user.getRefreshToken())){
             throw new JwtException("Refresh token invalido");
         }

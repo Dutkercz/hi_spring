@@ -1,14 +1,5 @@
 spring:
   datasource:
-    url: "jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQL_DATABASE}"
-    username: "${MYSQLUSER}"
-    password: "${MYSQL_ROOT_PASSWORD}"
-resilience4j:
-  ratelimiter:
-    instances:
-      backendApi:
-        limit-for-period: 10 #numero de requests permitidos
-        limit-refresh-period: 60s #tempo até o refresh dos tokens
-        timeout-duration: 0s #tempo em que a trhead espera a disponibilidade de tokens antes de falhar
-server:
-  port: ${PORT:8080}
+    url: "jdbc:postgresql://${POSTGRES_HOST}:5432/postgres?user=${POSTGRES_USER}&password=${POSTGRES_PW}"
+    username: "${POSTGRES_USER}"
+    password: "${POSTGRES_PW}"

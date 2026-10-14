@@ -3,11 +3,13 @@ package dutkercz.hi_backend.service;
 import dutkercz.hi_backend.dto.UserRequestDto;
 import dutkercz.hi_backend.dto.UserResponseDto;
 import dutkercz.hi_backend.exceptions.ResourceExistsException;
+import dutkercz.hi_backend.exceptions.ResourceNotFoundException;
 import dutkercz.hi_backend.model.User;
 import dutkercz.hi_backend.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,7 +37,8 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username);
+        return userRepository.findByEmail(username).orElseThrow(() ->
+                new ResourceNotFoundException("Email or password invalid"));
     }
 
     @Transactional
@@ -54,19 +57,20 @@ public class UserService implements UserDetailsService {
     }
 
     public UserResponseDto getUser(String username) {
-        var user =(User) userRepository.findByEmail(username);
+        var user =(User) loadUserByUsername(username);
         return new UserResponseDto(user);
     }
 
     @Transactional
     public void addUserPhoto(String username, MultipartFile image) {
-        var user = (User) userRepository.findByEmail(username);
+        var user = (User) loadUserByUsername(username);
         try {
             if (Files.notExists(dirPath)) {
                 Files.createDirectories(dirPath);
             }
-
-            deleteOldUserImg(user);
+            if(user.getFileName() != null) {
+               deleteOldUserImg(user);
+            }
 
             String fileName = image.getOriginalFilename() + Instant.now().getEpochSecond();
             Path targetLocation = dirPath.resolve(fileName);
@@ -91,7 +95,7 @@ public class UserService implements UserDetailsService {
     }
 
     public Path loadUserImg(String username){
-        var user = (User) userRepository.findByEmail(username);
+        var user = (User) loadUserByUsername(username);
         return dirPath.resolve(user.getFileName()).normalize();
     }
 
