@@ -1,12 +1,15 @@
 spring:
   application:
     name: hi
-  profiles:
-    active: "prod"
-resilience4j:
-  ratelimiter:
-    instances:
-      backendApi:
-        limit-for-period: 10 #numero de requests permitidos
-        limit-refresh-period: 60s #tempo até o refresh dos tokens
-        timeout-duration: 0s #tempo em que a trhead espera a disponibilidade de tokens antes de falhar
+  datasource:
+    url: "${SUPABASE_DB_URL}"
+    username: "${SUPABASE_DB_USERNAME}"
+    password: "${SUPABASE_DB_PASSWORD}"
+    driver-class-name: org.postgresql.Driver
+#resilience4j:
+#  ratelimiter:
+#    instances:
+#      backendApi:
+#        limit-for-period: 10 #numero de requests permitidos
+#        limit-refresh-period: 60s #tempo até o refresh dos tokens
+#        timeout-duration: 0s #tempo em que a trhead espera a disponibilidade de tokens antes de falhar
