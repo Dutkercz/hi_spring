@@ -12,4 +12,6 @@ spring:
 #      backendApi:
 #        limit-for-period: 10 #numero de requests permitidos
 #        limit-refresh-period: 60s #tempo até o refresh dos tokens
+server:
+  port: 8080
 #        timeout-duration: 0s #tempo em que a trhead espera a disponibilidade de tokens antes de falhar
