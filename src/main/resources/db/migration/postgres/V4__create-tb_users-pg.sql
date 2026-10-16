@@ -6,7 +6,7 @@ CREATE TABLE tb_users (
     password VARCHAR(255) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
     file_name VARCHAR(255),
-    is_active SMALLINT,
+    is_active BOOLEAN,
     created_at DATE NOT NULL,
     update_at DATE,
     role role NOT NULL DEFAULT 'USER',
