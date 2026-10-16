@@ -6,7 +6,10 @@ spring:
     driver-class-name: org.postgresql.Driver
   flyway:
     locations: classpath:db/migration/postgres
+server:
+  port: 8080
 credentials:
   admin:
     username: "${ADMIN_USERNAME}"
     password: "${ADMIN_PASSWORD}"
+  origin-url: "${ORIGIN_URL}"
