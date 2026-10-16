@@ -3,8 +3,12 @@ package dutkercz.hi_backend.service;
 import dutkercz.hi_backend.dto.DailyPricesDto;
 import dutkercz.hi_backend.dto.DailyPricesUpdateDto;
 import dutkercz.hi_backend.dto.admin.MonthlyResume;
+import dutkercz.hi_backend.dto.client.ClientResponseDto;
 import dutkercz.hi_backend.exceptions.ResourceNotFoundException;
+import dutkercz.hi_backend.mapper.ClientMapper;
+import dutkercz.hi_backend.model.Client;
 import dutkercz.hi_backend.model.Stay;
+import dutkercz.hi_backend.repository.ClientRepository;
 import dutkercz.hi_backend.repository.DailyPriceRepository;
 import dutkercz.hi_backend.repository.RoomRepository;
 import dutkercz.hi_backend.repository.StayRepository;
@@ -29,6 +33,8 @@ public class AdminService {
     private final DailyPriceRepository dailyPriceRepository;
     private final StayRepository stayRepository;
     private final RoomRepository roomRepository;
+    private final ClientRepository clientRepository;
+    private final ClientMapper clientMapper;
 
     public DailyPricesDto getDailyPrices() {
         return new DailyPricesDto(dailyPriceRepository.findAll().getLast());
@@ -126,5 +132,28 @@ public class AdminService {
     /// Calculo da quantidade de diárias baseado na lista de stays
     private Long getTotalDailyRates(List<Stay> stays) {
         return stays.stream().mapToLong(Stay::getDailyRates).sum();
+    }
+
+    public List<ClientResponseDto> findClients(String param) {
+        System.out.println("param:" + param);
+        if(param.replaceAll("[./-]", "").matches("\\d{11}")){
+            return getClientByCpf(param);
+        }
+        else if (param.replaceAll("[./-]", "").matches("\\d{12,16}")) {
+            return getClientByCnpj(param);
+        }
+        return clientRepository.findTop10ByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(param, param)
+                               .stream().map(clientMapper::toClientResponseDto).toList();
+    }
+
+    private List<ClientResponseDto> getClientByCnpj(String param) {
+        return clientRepository.findTop10ByCnpj((param))
+                           .stream().map(clientMapper::toClientResponseDto).toList();
+    }
+
+    private List<ClientResponseDto> getClientByCpf(String param) {
+        var clients =  List.of(clientRepository.findByCpf(param).orElseThrow(() ->
+                new ResourceNotFoundException("Client not found")));
+        return clients.stream().map(clientMapper::toClientResponseDto).toList();
     }
 }

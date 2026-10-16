@@ -4,3 +4,9 @@ spring:
     username: "${SUPABASE_DB_USERNAME}"
     password: "${SUPABASE_DB_PASSWORD}"
     driver-class-name: org.postgresql.Driver
+  flyway:
+    locations: classpath:db/migration/postgres
+credentials:
+  admin:
+    username: "${ADMIN_USERNAME}"
+    password: "${ADMIN_PASSWORD}"

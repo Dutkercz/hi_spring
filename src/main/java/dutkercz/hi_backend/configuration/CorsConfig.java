@@ -10,7 +10,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Libera todos os endpoints
-                .allowedOrigins("https://hi-react-topaz.vercel.app")
+                .allowedOrigins("http://localhost:5173")
                 .allowedMethods("GET", "POST", "PUT","PATCH", "DELETE", "OPTIONS", "HEAD")
                 .allowCredentials(true)
                 .allowedHeaders("*");

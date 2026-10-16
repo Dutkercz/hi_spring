@@ -5,3 +5,9 @@ spring:
     url: "jdbc:mysql://localhost:3306/hi_database?createDatabaseIfNotExist=true"
     username: "root"
     password: "$CDB1234r"
+  flyway:
+    locations: classpath:db/migration/mysql
+credentials:
+  admin:
+    username: "username@email.com"
+    password: "Abc1234"

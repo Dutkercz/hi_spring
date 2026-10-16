@@ -39,7 +39,7 @@ public class AdminController {
 
     @GetMapping("/search")
     public ResponseEntity<List<ClientResponseDto>> searchClients(@RequestParam(name = "param") String param) {
-        System.out.println("param: " + param);
-        return ResponseEntity.ok().build();
+        var clients = adminService.findClients(param);
+        return ResponseEntity.ok(clients);
     }
 }

@@ -1,17 +1,14 @@
 spring:
   application:
     name: hi
-  datasource:
-    url: "${SUPABASE_DB_URL}"
-    username: "${SUPABASE_DB_USERNAME}"
-    password: "${SUPABASE_DB_PASSWORD}"
-    driver-class-name: org.postgresql.Driver
+  profiles:
+    active: "prod"
+server:
+  port: 8080
 #resilience4j:
 #  ratelimiter:
 #    instances:
 #      backendApi:
 #        limit-for-period: 10 #numero de requests permitidos
 #        limit-refresh-period: 60s #tempo até o refresh dos tokens
-server:
-  port: 8080
 #        timeout-duration: 0s #tempo em que a trhead espera a disponibilidade de tokens antes de falhar
