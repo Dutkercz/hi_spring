@@ -28,8 +28,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
         var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN,
-                                                             accessDeniedException.getMessage());
-        log.error("Acesso negado custom handler {}", accessDeniedException.getMessage(), accessDeniedException);
+                                                             "Você não possui autorização para esta ação.");
+        log.error("Access denied called {}", accessDeniedException.getMessage());
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(objectMapper.writeValueAsString(problemDetail));

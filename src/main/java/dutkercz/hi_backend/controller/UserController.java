@@ -51,7 +51,9 @@ public class UserController {
     @GetMapping("/download-img")
     public ResponseEntity<?> getUserImg(@AuthenticationPrincipal String username) throws IOException {
         var path = userService.loadUserImg(username);
-
+        if (path == null){
+            return ResponseEntity.notFound().build();
+        }
         Resource resource = new UrlResource(path.toUri());
         if (!resource.exists() || !resource.isReadable()) {
             return ResponseEntity.notFound().build();

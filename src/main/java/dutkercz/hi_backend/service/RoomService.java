@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -26,7 +27,6 @@ public class RoomService {
     private final StayService stayService;
 
     public List<RoomForCardDto> getAllRooms() {
-
         List<Room> rooms = roomRepository.findAll();
         return rooms.stream().map(r -> {
             Stay lastStay = null;
@@ -37,7 +37,7 @@ public class RoomService {
                 }
             }
             return roomMapper.toRoomForCardDto(r, lastStay);
-        }).toList();
+        }).sorted(Comparator.comparing(RoomForCardDto::id)).toList();
     }
 
     public Room getRoomById(Long id) {

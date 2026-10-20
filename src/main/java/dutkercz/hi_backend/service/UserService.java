@@ -96,7 +96,10 @@ public class UserService implements UserDetailsService {
 
     public Path loadUserImg(String username){
         var user = (User) loadUserByUsername(username);
-        return dirPath.resolve(user.getFileName()).normalize();
+        if(user.getFileName() != null) {
+            return dirPath.resolve(user.getFileName()).normalize();
+        }
+        return null;
     }
 
 }

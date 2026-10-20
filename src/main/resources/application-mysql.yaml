@@ -11,4 +11,4 @@ credentials:
   admin:
     username: "username@email.com"
     password: "Abc1234"
-  origin-url: "http://localhost:3751"
+  origin-url: "http://localhost:5173"

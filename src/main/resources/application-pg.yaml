@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/hi_database"
+    username: "postgres"
+    password: "rrr8tyda"
+  flyway:
+    locations: classpath:db/migration/postgres
+credentials:
+  admin:
+    username: "username@email.com"
+    password: "Abc1234"
+  origin-url: "http://localhost:5173"
