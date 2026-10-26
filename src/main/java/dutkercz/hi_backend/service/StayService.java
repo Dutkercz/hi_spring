@@ -42,9 +42,7 @@ public class StayService {
 
     @Transactional
     public StayResponseDto newStay(StayRequestDto request) {
-        log.info("StayRequestDto: {}", request);
         Client client = clientValidation.validateWithId(request.clientId());
-
         Room room = roomValidation.validateRoomInRequest(request);
 
         LocalDateTime checkInAjustado = HelperStayCalcs.adjustCheckin(request.checkIn());
@@ -65,10 +63,12 @@ public class StayService {
         room.setStatus(RoomStatusEnum.OCCUPIED);
 
         stayRepository.save(stay);
+        var payment = new Payment(null, stay, request.method(),
+                       stay.getPaidPrice(), LocalDate.now());
+        stay.addPayment(payment);
         for (StayGuest sg : request.stayGuests()){
             stay.addStayGuest(sg);
         }
-        log.info("New stay has been created: {}", stay);
         return stayMapper.toResponse(stay);
     }
 
@@ -97,7 +97,7 @@ public class StayService {
         }
 
         var payment = stayMapper.toPaymentEntity(paymentRequest);
-        stay.addPaymentAmount(payment);
+        addPaymentAmount(stay, payment);
         return stayMapper.toResponse(stay);
     }
 
@@ -175,6 +175,15 @@ public class StayService {
             roomStatusList.add(roomStatus);
         }
         return roomStatusList;
+    }
+
+    private void addPaymentAmount(Stay stay, Payment payment) {
+        stay.setPaidPrice(stay.getPaidPrice().add(payment.getAmount()));
+        stay.getPayments().add(payment);
+        if (stay.getPaidPrice().compareTo(stay.getTotalPrice()) == 0) {
+            stay.setIsPaid(true);
+        }
+        payment.setStay(stay);
     }
 }
 

@@ -2,6 +2,7 @@ package dutkercz.hi_backend.dto.stay;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import dutkercz.hi_backend.model.StayGuest;
+import dutkercz.hi_backend.model.enums.PaymentMethod;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 
@@ -25,6 +26,8 @@ public record StayRequestDto(
 
         @NotNull
         Integer totalGuests,
+
+        PaymentMethod method,
 
         @NotNull
         Boolean isPaid,
