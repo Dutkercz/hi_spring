@@ -45,7 +45,7 @@ public class Stay {
     private LocalDateTime checkOut;
 
     @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Payment> payments;
+    List<Payment> payments = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "stay")
     private List<StayGuest> stayGuests = new ArrayList<>();
@@ -60,13 +60,8 @@ public class Stay {
         stayGuest.setStay(null);
     }
 
-    public void addPaymentAmount(Payment payment) {
-        this.paidPrice = this.paidPrice.add(payment.getAmount());
+    public void addPayment(Payment payment) {
         payments.add(payment);
-        if (this.paidPrice.compareTo(totalPrice) == 0) {
-            isPaid = true;
-        }
         payment.setStay(this);
     }
-
 }

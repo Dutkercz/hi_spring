@@ -27,6 +27,11 @@ public class RoomController {
         return ResponseEntity.ok().body(roomService.getAllRooms());
     }
 
+    @PostMapping
+    public ResponseEntity<RoomResponseDto> addRoom(){
+        return ResponseEntity.ok().body(roomService.addRoom());
+    }
+
 
     @PatchMapping("/{id}")
     public ResponseEntity<RoomResponseDto> updateRoomConfig(@PathVariable Long id, @RequestBody RoomUpdateDto updateDto){

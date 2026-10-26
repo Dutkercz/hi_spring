@@ -7,6 +7,7 @@ import dutkercz.hi_backend.exceptions.ResourceNotFoundException;
 import dutkercz.hi_backend.mapper.RoomMapper;
 import dutkercz.hi_backend.model.Room;
 import dutkercz.hi_backend.model.Stay;
+import dutkercz.hi_backend.model.enums.RoomStatusEnum;
 import dutkercz.hi_backend.model.enums.StayStatus;
 import dutkercz.hi_backend.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -54,5 +56,12 @@ public class RoomService {
                            updateDto.singleBeds() : room.getSingleBeds());
 
         return  roomMapper.toResponseRoomDto(room);
+    }
+
+    public RoomResponseDto addRoom() {
+        var roomNumber = roomRepository.count() + 1;
+        Room room = new Room(null, String.valueOf(roomNumber), 0, 0,
+                             RoomStatusEnum.AVAILABLE, new ArrayList<>());
+        return  roomMapper.toResponseRoomDto(roomRepository.save(room));
     }
 }
