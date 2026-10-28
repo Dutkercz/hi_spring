@@ -6,7 +6,6 @@ import dutkercz.hi_backend.dto.admin.MonthlyResume;
 import dutkercz.hi_backend.dto.client.ClientResponseDto;
 import dutkercz.hi_backend.exceptions.ResourceNotFoundException;
 import dutkercz.hi_backend.mapper.ClientMapper;
-import dutkercz.hi_backend.model.Client;
 import dutkercz.hi_backend.model.Stay;
 import dutkercz.hi_backend.repository.ClientRepository;
 import dutkercz.hi_backend.repository.DailyPriceRepository;
@@ -72,9 +71,9 @@ public class AdminService {
         var actualMonthStays = stayRepository.findAllByCheckOutBetween(firstDay, lastDay);
         var lastMonthStays = getLatMonthStays(actualMonthDate);
 
-        var actualMonthProfit = getTotalStaysAmountPerMonth(actualMonthStays);
-        var lastMonthProfit = getTotalStaysAmountPerMonth(lastMonthStays);
-        var percentageProfitChange = calculatePercentageChange(actualMonthProfit, lastMonthProfit);
+        var actualMonthProfit = getTotalProfitPerMonth(actualMonthStays);
+        var lastMonthProfit = getTotalProfitPerMonth(lastMonthStays);
+        var percentageProfitChange = calculateProfitPercentageChange(actualMonthProfit, lastMonthProfit);
 
         var actualMonthDailyRates = getTotalDailyRates(actualMonthStays);
         var lastMonthDailyRates = getTotalDailyRates(lastMonthStays);
@@ -103,19 +102,25 @@ public class AdminService {
     /// Calculo da variação de porcentagem
     /// valorAtual - valorAnterior / valorAnterior = totalParcial
     /// total = totalParcial * 100
-    private BigDecimal calculatePercentageChange(BigDecimal actual, BigDecimal last) {
-        if (last.compareTo(BigDecimal.ZERO) <= 0 ||
-                actual.compareTo(BigDecimal.ZERO) <= 0) {
-            return BigDecimal.ZERO;
+    private Double calculateProfitPercentageChange(BigDecimal actualProfit, BigDecimal lastProfit) {
+        if (lastProfit.compareTo(BigDecimal.ZERO) <= 0 && actualProfit.compareTo(BigDecimal.ZERO) > 0) {
+            return 100.0;
+        }
+        if (lastProfit.compareTo(BigDecimal.ZERO) > 0 && actualProfit.compareTo(BigDecimal.ZERO) <= 0){
+            return -100.0;
+        }
+        if (lastProfit.compareTo(BigDecimal.ZERO) == 0 && actualProfit.compareTo(BigDecimal.ZERO) == 0){
+            return 0.0;
         }
 
-        return actual.subtract(last)
-                .divide(last, 4, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100))
-                .setScale(2, RoundingMode.HALF_UP);
+//        return actualProfit.subtract(lastProfit)
+//                .divide(lastProfit, 4, RoundingMode.HALF_UP)
+//                .multiply(BigDecimal.valueOf(100))
+//                .setScale(2, RoundingMode.HALF_UP);
+        return (actualProfit.doubleValue() - lastProfit.doubleValue()) / lastProfit.doubleValue() * 100 ;
     }
 
-    private BigDecimal getTotalStaysAmountPerMonth(List<Stay> stays) {
+    private BigDecimal getTotalProfitPerMonth(List<Stay> stays) {
         return stays.stream().map(Stay::getPaidPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }

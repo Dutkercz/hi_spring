@@ -4,6 +4,7 @@ import dutkercz.hi_backend.dto.room.RoomForCardDto;
 import dutkercz.hi_backend.dto.room.RoomResponseDto;
 import dutkercz.hi_backend.dto.room.RoomUpdateDto;
 import dutkercz.hi_backend.exceptions.ResourceNotFoundException;
+import dutkercz.hi_backend.exceptions.RoomBadRequestException;
 import dutkercz.hi_backend.mapper.RoomMapper;
 import dutkercz.hi_backend.model.Room;
 import dutkercz.hi_backend.model.Stay;
@@ -26,7 +27,6 @@ public class RoomService {
 
     private final RoomRepository roomRepository;
     private final RoomMapper roomMapper;
-    private final StayService stayService;
 
     public List<RoomForCardDto> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
@@ -44,7 +44,7 @@ public class RoomService {
 
     public Room getRoomById(Long id) {
         return roomRepository.findById(id)
-                             .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + id));
+                     .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + id));
     }
 
     @Transactional
@@ -63,5 +63,13 @@ public class RoomService {
         Room room = new Room(null, String.valueOf(roomNumber), 0, 0,
                              RoomStatusEnum.AVAILABLE, new ArrayList<>());
         return  roomMapper.toResponseRoomDto(roomRepository.save(room));
+    }
+
+    public void deleteRoom(Long id) {
+        var room = getRoomById(id);
+        if (room.getStatus().cantDeleteRoom()) {
+            throw new RoomBadRequestException("O apartamento possui uma hospedagem ativa.");
+        }
+        roomRepository.delete(room);
     }
 }

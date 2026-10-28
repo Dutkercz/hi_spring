@@ -5,4 +5,9 @@ public enum RoomStatusEnum {
     AVAILABLE,
     MAINTENANCE,
     RESERVED,
+    ;
+
+    public boolean cantDeleteRoom() {
+        return this == RoomStatusEnum.OCCUPIED;
+    }
 }

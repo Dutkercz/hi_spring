@@ -29,6 +29,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(RoomBadRequestException.class)
+    public ResponseEntity<ProblemDetail> handleRoomBadRequest(RoomBadRequestException e) {
+        var error = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     @ExceptionHandler(PaymentException.class)
     public ResponseEntity<ProblemDetail> handlePaymentException(PaymentException e) {
         var error =  ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -75,7 +81,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<ProblemDetail> handleAuthorizationDeniedException(AuthorizationDeniedException e) {
+    public ResponseEntity<ProblemDetail> handleAuthorizationDeniedException() {
         var error = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN,
                                                      "Você não tem permissão para isso");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);

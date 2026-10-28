@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public record MonthlyResume(
         BigDecimal totalMonthProfit,
-        BigDecimal percentageChange,
+        Double percentageChange,
         BigDecimal lastMonthProfit,
         Long actualMonthDailyRates,
         Long lastMonthDailyRates,

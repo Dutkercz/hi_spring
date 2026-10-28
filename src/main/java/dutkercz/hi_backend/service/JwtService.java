@@ -105,7 +105,7 @@ public class JwtService {
             }
             return claims.getSubject();
         } catch (JwtException e) {
-            throw new JwtException(e.getMessage());
+            throw new JwtException("Erro ao validar token");
         }
     }
 
