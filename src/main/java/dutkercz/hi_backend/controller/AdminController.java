@@ -36,10 +36,4 @@ public class AdminController {
             @RequestParam Integer month) {
         return ResponseEntity.ok(adminService.totalStaysAmountPerMonth(year, month));
     }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<ClientResponseDto>> searchClients(@RequestParam(name = "param") String param) {
-        var clients = adminService.findClients(param);
-        return ResponseEntity.ok(clients);
-    }
 }

@@ -11,4 +11,6 @@ public interface StayRepository extends JpaRepository<Stay, Long> {
     List<Stay> findAllByCheckOutBetween(LocalDateTime firstDay, LocalDateTime lastDay);
 
     List<Stay> findAllByCheckInBetween(LocalDateTime firstDay, LocalDateTime lastDay);
+
+    List<Stay> findAllByClientId(Long idClient);
 }

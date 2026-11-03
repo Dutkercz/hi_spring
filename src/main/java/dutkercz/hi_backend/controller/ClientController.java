@@ -1,5 +1,6 @@
 package dutkercz.hi_backend.controller;
 
+import dutkercz.hi_backend.dto.client.ClientDetailDto;
 import dutkercz.hi_backend.dto.client.ClientRequestDto;
 import dutkercz.hi_backend.dto.client.ClientResponseDto;
 import dutkercz.hi_backend.service.ClientService;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/clients")
@@ -31,4 +33,14 @@ public class ClientController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<ClientResponseDto>> searchClients(@RequestParam(name = "param") String param) {
+        var clients = clientService.findClients(param);
+        return ResponseEntity.ok(clients);
+    }
+
+    @GetMapping("/details/{id}")
+    public ResponseEntity<ClientDetailDto> findClientById(@PathVariable Long id){
+        return ResponseEntity.ok(clientService.getClientDetails(id));
+    }
 }

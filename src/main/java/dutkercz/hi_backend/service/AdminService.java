@@ -139,26 +139,4 @@ public class AdminService {
         return stays.stream().mapToLong(Stay::getDailyRates).sum();
     }
 
-    public List<ClientResponseDto> findClients(String param) {
-        System.out.println("param:" + param);
-        if(param.replaceAll("[./-]", "").matches("\\d{11}")){
-            return getClientByCpf(param);
-        }
-        else if (param.replaceAll("[./-]", "").matches("\\d{12,16}")) {
-            return getClientByCnpj(param);
-        }
-        return clientRepository.findTop10ByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(param, param)
-                               .stream().map(clientMapper::toClientResponseDto).toList();
-    }
-
-    private List<ClientResponseDto> getClientByCnpj(String param) {
-        return clientRepository.findTop10ByCnpj((param))
-                           .stream().map(clientMapper::toClientResponseDto).toList();
-    }
-
-    private List<ClientResponseDto> getClientByCpf(String param) {
-        var clients =  List.of(clientRepository.findByCpf(param).orElseThrow(() ->
-                new ResourceNotFoundException("Client not found")));
-        return clients.stream().map(clientMapper::toClientResponseDto).toList();
-    }
 }
