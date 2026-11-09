@@ -40,7 +40,7 @@ public class SecurityConfig {
                         ex.authenticationEntryPoint(customAuthEntryPoint)
                           .accessDeniedHandler(customAccessDeniedHandler))
                    .authorizeHttpRequests(req -> {
-                        req.requestMatchers(HttpMethod.GET, "/api/v1/rooms").permitAll();
+                        req.requestMatchers(HttpMethod.GET, "/api/v1/rooms", "/actuator/health").permitAll();
                         req.requestMatchers(HttpMethod.POST,
                                            "/api/v1/users",
                                            "/api/v1/auth",
