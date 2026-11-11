@@ -4,6 +4,7 @@ import dutkercz.hi_backend.dto.LoginResponse;
 import dutkercz.hi_backend.exceptions.ResourceNotFoundException;
 import dutkercz.hi_backend.model.User;
 import dutkercz.hi_backend.repository.UserRepository;
+import dutkercz.hi_backend.service.utils.Hasher;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -18,11 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.Date;
-import java.util.HexFormat;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +34,7 @@ public class JwtService {
     @Transactional
     public LoginResponse renewRefreshToken(String receivedRefresh,
                                     HttpServletResponse response) throws NoSuchAlgorithmException {
-        String receivedHashedToken = hashRefreshToken(receivedRefresh);
+        String receivedHashedToken = Hasher.generateHash(receivedRefresh);
         var claims = validateRefreshToken(receivedRefresh);
         var user = (User) userRepository.findByEmail(claims.getSubject()).orElseThrow(() ->
                 new ResourceNotFoundException("User not found"));
@@ -61,7 +60,7 @@ public class JwtService {
                 .signWith(getSingKey())
                 .compact();
 
-            user.setRefreshToken(hashRefreshToken(refreshToken));
+            user.setRefreshToken(Hasher.generateHash(refreshToken));
             return refreshToken;
         }catch (NoSuchAlgorithmException | WeakKeyException e){
             throw new WeakKeyException("Erro ao gerar token");
@@ -129,12 +128,5 @@ public class JwtService {
     private SecretKey getSingKey() {
         byte[] encodedKey = SECRET_KEY.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(encodedKey);
-    }
-
-    private String hashRefreshToken(String refreshToken) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        var hash = digest.digest(refreshToken.getBytes(StandardCharsets.UTF_8));
-        return HexFormat.of().formatHex(hash);
-
     }
 }

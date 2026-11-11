@@ -5,6 +5,10 @@ spring:
     active: "prod"
 server:
   port: 8080
+mailsender:
+  api-key: ${MAILSENDER_API_KEY}
+  domain: ${MAILSENDER_DOMAIN}
+  recovery-url: ${RECOVERY_PW_URL}
 #resilience4j:
 #  ratelimiter:
 #    instances:

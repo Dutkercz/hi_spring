@@ -18,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
+import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -65,5 +66,11 @@ public class UserController {
                 contentType(MediaType.parseMediaType(
                         contentType ))
                 .body(resource);
+    }
+
+    @PostMapping("/recovey-pw/{email}")
+    public ResponseEntity<Void> sendRecoveryPwEmail(@PathVariable String email) throws NoSuchAlgorithmException {
+        userService.sendRecoveryPwMail(email);
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,10 +1,9 @@
 package dutkercz.hi_backend;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import dutkercz.hi_backend.controller.DefaultAbstractContainerTest;
 
-@SpringBootTest
-class HiApplicationTests {
+class HiApplicationTests extends DefaultAbstractContainerTest {
 
     @Test
     void contextLoads() {
