@@ -1,7 +1,10 @@
 package dutkercz.hi_backend.service;
 
+import dutkercz.hi_backend.dto.RecoveryPwDto;
 import dutkercz.hi_backend.dto.UserRequestDto;
 import dutkercz.hi_backend.dto.UserResponseDto;
+import dutkercz.hi_backend.exceptions.InvalidOtpCode;
+import dutkercz.hi_backend.exceptions.RateLimitExceededException;
 import dutkercz.hi_backend.exceptions.ResourceExistsException;
 import dutkercz.hi_backend.exceptions.ResourceNotFoundException;
 import dutkercz.hi_backend.model.Otp;
@@ -10,6 +13,8 @@ import dutkercz.hi_backend.model.enums.EmailType;
 import dutkercz.hi_backend.repository.OtpRepository;
 import dutkercz.hi_backend.repository.UserRepository;
 import dutkercz.hi_backend.service.utils.Hasher;
+import io.github.bucket4j.ConsumptionProbe;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +35,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -42,6 +48,7 @@ public class UserService implements UserDetailsService {
     private final Path dirPath = Paths.get(IMG_DIR).toAbsolutePath().normalize();;
     private final MailSender mailSender;
     private final OtpRepository otpRepository;
+    private final EmailRateLimiterService rateLimiterService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -49,16 +56,24 @@ public class UserService implements UserDetailsService {
                 new ResourceNotFoundException("Email or password invalid"));
     }
 
+    //username no sistema é o email, então ocasionalmente pode aparecer um ou outro... irei normalizar isso
     public void sendRecoveryPwMail(String username) throws NoSuchAlgorithmException {
-        var user = (User) loadUserByUsername(username);
+        ConsumptionProbe probe = rateLimiterService.tryConsume(username);
+        if(!probe.isConsumed()){
+            long waitRefillSeconds = TimeUnit.NANOSECONDS.toMinutes(probe.getNanosToWaitForRefill());
+            throw new RateLimitExceededException(waitRefillSeconds);
+        }
 
+        var user = userRepository.findByUsername(username);
+        if(user.isEmpty()){
+            return;
+        }
 
         var otpCode = generateOTP();
-        log.info("Otp created {}", otpCode);
-        var otp = new Otp(user, Hasher.generateHash(otpCode));
+        var otp = new Otp(user.get(), Hasher.generateHash(otpCode));
         otpRepository.save(otp);
 
-        mailSender.sendMail(user, otpCode, EmailType.RECOVERY_PW);
+        mailSender.sendMail(user.get(), otpCode, EmailType.RECOVERY_PW);
     }
 
     private String generateOTP() {
@@ -128,4 +143,21 @@ public class UserService implements UserDetailsService {
         return null;
     }
 
+    @Transactional
+    public void recoveryPw(RecoveryPwDto request) throws NoSuchAlgorithmException {
+        var otpHash = Hasher.generateHash(request.otpCode());
+        otpRepository.findByOtpHash(otpHash).ifPresentOrElse(x -> {
+            if(!x.getOtpHash().equals(otpHash) ||
+               Instant.now().isAfter(x.getCreatedAt().plusSeconds(450)) ||
+               !x.getIsValid()){
+                throw new InvalidOtpCode("O código não está correto, expirou ou já foi utilizado.");
+            }
+            x.setIsValid(false);
+            var user = x.getUser();
+            var pwHashed = passwordEncoder.encode(request.password());
+            user.setPassword(pwHashed);
+        }, () -> {
+            throw new ResourceNotFoundException("O código OTP informado não foi encontrado.");
+        });
+    }
 }

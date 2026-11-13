@@ -44,7 +44,7 @@ public class SecurityConfig {
                                             "/api/v1/rooms",
                                             "/actuator/health").permitAll();
                         req.requestMatchers(HttpMethod.POST,
-                                            "/api/v1/users/recovey-pw/**",
+                                            "/api/v1/users/recovery-pw/**",
                                            "/api/v1/users",
                                            "/api/v1/auth",
                                            "/api/v1/auth/refresh-token").permitAll();

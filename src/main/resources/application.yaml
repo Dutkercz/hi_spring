@@ -3,6 +3,10 @@ spring:
     name: hi
   profiles:
     active: "prod"
+  data:
+    redis:
+      host: ${REDIS_URL:localhost}
+      port: ${REDIS_PORT:6379}
 server:
   port: 8080
 mailsender:

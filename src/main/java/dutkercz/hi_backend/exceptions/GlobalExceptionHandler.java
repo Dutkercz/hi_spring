@@ -13,31 +13,21 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CepNotExistException.class)
-    public ResponseEntity<ProblemDetail> handleCepNotExistException(CepNotExistException e) {
+    @ExceptionHandler({CepNotExistException.class, ResourceNotFoundException.class})
+    public ResponseEntity<ProblemDetail> handleCepNotExistException(RuntimeException e) {
         var error = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ProblemDetail> handleBusinessException(BusinessException e) {
+    @ExceptionHandler({RoomBadRequestException.class, InvalidOtpCode.class, BusinessException.class,
+                       PaymentException.class})
+    public ResponseEntity<ProblemDetail> handleRoomBadRequest(RuntimeException e) {
         var error = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
-    @ExceptionHandler(RoomBadRequestException.class)
-    public ResponseEntity<ProblemDetail> handleRoomBadRequest(RoomBadRequestException e) {
-        var error = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
-    @ExceptionHandler(PaymentException.class)
-    public ResponseEntity<ProblemDetail> handlePaymentException(PaymentException e) {
-        var error =  ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
@@ -47,13 +37,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ProblemDetail> handleEntityNotFoundException(ResourceNotFoundException e) {
-        var error = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
-
-    @ExceptionHandler({WeakKeyException.class, JwtException.class})
+    @ExceptionHandler(WeakKeyException.class)
     public ResponseEntity<ProblemDetail> handleJwtException(RuntimeException e) {
         var error = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -68,7 +52,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
-    @ExceptionHandler(CookieInvalidException.class)
+    @ExceptionHandler({CookieInvalidException.class, JwtException.class})
     public ResponseEntity<ProblemDetail> handleCookieInvalidException(CookieInvalidException e) {
         var error = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
@@ -87,4 +71,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ProblemDetail> handleRateLimit(RateLimitExceededException e) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+             .header("Retry-After", String.valueOf(e.getWaitForRefillSeconds()))
+             .body(ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS,
+    "Muitas tentativas para este email, tente novamente em " + e.getWaitForRefillSeconds() + " minutos"));
+    }
 }

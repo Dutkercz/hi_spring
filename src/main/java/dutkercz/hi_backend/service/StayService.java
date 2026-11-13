@@ -12,11 +12,13 @@ import dutkercz.hi_backend.mapper.StayMapper;
 import dutkercz.hi_backend.model.*;
 import dutkercz.hi_backend.model.enums.RoomStatusEnum;
 import dutkercz.hi_backend.model.enums.StayStatus;
+import dutkercz.hi_backend.repository.ClientRepository;
 import dutkercz.hi_backend.repository.DailyPriceRepository;
+import dutkercz.hi_backend.repository.RoomRepository;
 import dutkercz.hi_backend.repository.StayRepository;
 import dutkercz.hi_backend.service.utils.HelperStayCalcs;
-import dutkercz.hi_backend.service.validations.ClientValidation;
-import dutkercz.hi_backend.service.validations.RoomValidation;
+import dutkercz.hi_backend.service.validations.room.RoomValidations;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,16 +36,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StayService {
 
-    private final ClientValidation clientValidation;
     private final StayMapper stayMapper;
-    private final RoomValidation roomValidation;
     private final StayRepository stayRepository;
     private final DailyPriceRepository dailyPriceRepository;
+    private final RoomRepository roomRepository;
+    private final List<RoomValidations> roomValidations;
+    private final ClientRepository clientRepository;
 
     @Transactional
     public StayResponseDto newStay(StayRequestDto request) {
-        Client client = clientValidation.validateWithId(request.clientId());
-        Room room = roomValidation.validateRoomInRequest(request);
+        Client client = clientRepository.findById(request.clientId()).orElseThrow(() ->
+                                      new ResourceNotFoundException("Client not found with id " + request.clientId()));
+        Room room = roomRepository.findById(request.roomId())
+                                  .orElseThrow(() -> new EntityNotFoundException("Room not found"));
+        roomValidations.forEach(v -> v.validateRoom(request, room));
 
         LocalDateTime checkInAjustado = HelperStayCalcs.adjustCheckin(request.checkIn());
         LocalDateTime checkOutAjustado = HelperStayCalcs.adjustCheckout(request.checkOut());

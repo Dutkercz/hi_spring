@@ -1,5 +1,6 @@
 package dutkercz.hi_backend.controller;
 
+import dutkercz.hi_backend.dto.RecoveryPwDto;
 import dutkercz.hi_backend.dto.UserRequestDto;
 import dutkercz.hi_backend.dto.UserResponseDto;
 import dutkercz.hi_backend.service.UserService;
@@ -68,9 +69,15 @@ public class UserController {
                 .body(resource);
     }
 
-    @PostMapping("/recovey-pw/{email}")
+    @PostMapping("/recovery-pw/{email}")
     public ResponseEntity<Void> sendRecoveryPwEmail(@PathVariable String email) throws NoSuchAlgorithmException {
         userService.sendRecoveryPwMail(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/recovery-pw")
+    public ResponseEntity<Void> recoveryPwRedefine(@RequestBody RecoveryPwDto request) throws NoSuchAlgorithmException {
+        userService.recoveryPw(request);
         return ResponseEntity.ok().build();
     }
 }

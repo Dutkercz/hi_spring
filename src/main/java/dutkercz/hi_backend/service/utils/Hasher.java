@@ -7,9 +7,9 @@ import java.util.HexFormat;
 
 public class Hasher {
 
-    public static String generateHash(String refreshToken) throws NoSuchAlgorithmException {
+    public static String generateHash(String token) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        var hash = digest.digest(refreshToken.getBytes(StandardCharsets.UTF_8));
+        var hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
         return HexFormat.of().formatHex(hash);
     }
 }
