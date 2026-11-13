@@ -13,6 +13,8 @@ mailsender:
   api-key: ${MAILSENDER_API_KEY}
   domain: ${MAILSENDER_DOMAIN}
   recovery-url: ${RECOVERY_PW_URL}
+
+redis-url-port: ${REDIS_FULL_URL_PORT}
 #resilience4j:
 #  ratelimiter:
 #    instances:

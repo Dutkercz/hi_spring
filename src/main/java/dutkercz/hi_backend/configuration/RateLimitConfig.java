@@ -18,10 +18,8 @@ import java.time.Duration;
 @Configuration
 public class RateLimitConfig {
 
-    @Value(value = "${spring.data.redis.host}")
-    private String REDIS_HOST;
-    @Value(value = "${spring.data.redis.port}")
-    private Integer REDIS_PORT;
+    @Value(value = "${redis-url-port}")
+    private String REDIS_FULL_URL_PORT;
 
 ///Algumas definições:
     ///Bucket: representa o limite de requisições de determinado usuário ou IP. cada email vai ter o seu
@@ -34,7 +32,7 @@ public class RateLimitConfig {
 /// ProxyManager<String>: responsável por gerenciar os buckets, utilizando uma chave do tipo String para identificar
     public ProxyManager<String> lettuceProxyManager(){
         //Aqui estamos criando um cliente Redis utilizando a biblioteca Lettuce.
-       RedisClient redisClient = RedisClient.create("redis://" + REDIS_HOST + ":" + REDIS_PORT);
+       RedisClient redisClient = RedisClient.create(REDIS_FULL_URL_PORT);
 
 //Criando a conexão: estamos estabelecendo uma conexão com o Redis e definindo como os dados serão serializados
 // chave=string / valor=array de bytes

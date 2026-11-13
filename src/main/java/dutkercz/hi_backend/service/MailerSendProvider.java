@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class MailerSendProvider implements MailSender {
 
         Email email = new Email();
         //para quem sera enviado o email
-        Recipient recipient = new Recipient(firstName, user.getEmail());
+        Recipient recipient = new Recipient(firstName, user.getEmail().toLowerCase(Locale.ROOT).trim());
 
         //contem nome e email do destinatário
         email.addRecipient(recipient);
