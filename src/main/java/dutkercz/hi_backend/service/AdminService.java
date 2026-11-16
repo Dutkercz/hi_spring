@@ -3,7 +3,7 @@ package dutkercz.hi_backend.service;
 import dutkercz.hi_backend.dto.DailyPricesDto;
 import dutkercz.hi_backend.dto.DailyPricesUpdateDto;
 import dutkercz.hi_backend.dto.admin.MonthlyResume;
-import dutkercz.hi_backend.dto.client.ClientResponseDto;
+import dutkercz.hi_backend.exceptions.BusinessException;
 import dutkercz.hi_backend.exceptions.ResourceNotFoundException;
 import dutkercz.hi_backend.mapper.ClientMapper;
 import dutkercz.hi_backend.model.Stay;
@@ -14,7 +14,6 @@ import dutkercz.hi_backend.repository.StayRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,9 +39,9 @@ public class AdminService {
     }
 
     @Transactional
-    public DailyPricesDto adjustDailyPrice(@Valid DailyPricesUpdateDto request) throws BadRequestException {
+    public DailyPricesDto adjustDailyPrice(@Valid DailyPricesUpdateDto request) {
         var dailyPrices = dailyPriceRepository.findById(request.id())
-                .orElseThrow(() -> new ResourceNotFoundException("Not found daily prices"));
+                .orElseThrow(() -> new ResourceNotFoundException("Tabela de preços não encontrada"));
         verifyNumbersBeforeUpdate(request);
         dailyPrices.setOneGuestPrice(request.oneGuestPrice());
         dailyPrices.setTwoGuestPrice(request.twoGuestPrice());
@@ -51,12 +50,12 @@ public class AdminService {
         return new DailyPricesDto(dailyPrices);
     }
 
-    private void verifyNumbersBeforeUpdate(@Valid DailyPricesUpdateDto request) throws BadRequestException {
+    private void verifyNumbersBeforeUpdate(@Valid DailyPricesUpdateDto request) {
         if (request.oneGuestPrice().compareTo(BigDecimal.ZERO) < 0 ||
                 request.twoGuestPrice().compareTo(BigDecimal.ZERO) < 0 ||
                 request.threeGuestPrice().compareTo(BigDecimal.ZERO) < 0 ||
                 request.fourGuestPrice().compareTo(BigDecimal.ZERO) < 0) {
-            throw new BadRequestException("O valor deve ser maior que zero");
+            throw new BusinessException("O valor da diária deve ser maior que zero");
         }
     }
 

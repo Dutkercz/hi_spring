@@ -18,7 +18,6 @@ import dutkercz.hi_backend.repository.RoomRepository;
 import dutkercz.hi_backend.repository.StayRepository;
 import dutkercz.hi_backend.service.utils.HelperStayCalcs;
 import dutkercz.hi_backend.service.validations.room.RoomValidations;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,9 +45,9 @@ public class StayService {
     @Transactional
     public StayResponseDto newStay(StayRequestDto request) {
         Client client = clientRepository.findById(request.clientId()).orElseThrow(() ->
-                                      new ResourceNotFoundException("Client not found with id " + request.clientId()));
+                                      new ResourceNotFoundException("Cliente não encontrado"));
         Room room = roomRepository.findById(request.roomId())
-                                  .orElseThrow(() -> new EntityNotFoundException("Room not found"));
+                                  .orElseThrow(() -> new ResourceNotFoundException("Apartamento não encontrado"));
         roomValidations.forEach(v -> v.validateRoom(request, room));
 
         LocalDateTime checkInAjustado = HelperStayCalcs.adjustCheckin(request.checkIn());
@@ -82,7 +81,7 @@ public class StayService {
     @Transactional
     public StayResponseDto addStay(Long id) {
         var stay = stayRepository.findById(id).orElseThrow(() ->
-                                            new ResourceNotFoundException("Stay with id " + id + " not found"));
+                                            new ResourceNotFoundException("Hospedagem não encontrada"));
         stay.setCheckOut(stay.getCheckOut().plusDays(1));
         long dailyRates = HelperStayCalcs.calcDailyRates(stay.getCheckIn(), stay.getCheckOut());
         stay.setDailyRates(dailyRates);
@@ -94,12 +93,12 @@ public class StayService {
     @Transactional
     public StayResponseDto addPayment(Long id, StayPayment paymentRequest) {
         var stay = stayRepository.findById(id).orElseThrow(() ->
-                                           new ResourceNotFoundException("Stay with id " + id + " not found"));
+                                           new ResourceNotFoundException("Hospedagem não encontrada"));
         if (paymentRequest.amount().compareTo(stay.getTotalPrice()) > 0) {
-            throw new PaymentException("This payment amount exceeds daily total amount");
+            throw new PaymentException("O valor do pagamento não pode ser maior que o valor total da hospedagem");
         }
         if (paymentRequest.amount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new PaymentException("Payment amount cant be negative or zero");
+            throw new PaymentException("O valor do pagamento deve ser maior que zero");
         }
 
         var payment = stayMapper.toPaymentEntity(paymentRequest);
@@ -110,17 +109,17 @@ public class StayService {
     @Transactional
     public void checkout(Long id) {
         Stay stay = stayRepository.findById(id).orElseThrow(() ->
-                                new ResourceNotFoundException("Stay with id " + id + " not found"));
+                                new ResourceNotFoundException("Hospedagem não encontrada"));
         Room room = stay.getRoom();
 
         long actualDailyRates = HelperStayCalcs.calcDailyRates(stay.getCheckIn(),
                                            HelperStayCalcs.adjustCheckout(LocalDateTime.now()));
         if (stay.getDailyRates() != actualDailyRates){
-            throw new BusinessException("Total daily rates do not match");
+            throw new BusinessException("O total de diárias não corresponde ao período da hospedagem");
         }
 
         if (!stay.getIsPaid() || stay.getPaidPrice().compareTo(stay.getTotalPrice()) != 0) {
-            throw new PaymentException("Stay is not paid");
+            throw new PaymentException("A hospedagem não está totalmente paga");
         }
 
         stay.setCheckOut(HelperStayCalcs.adjustCheckout(stay.getCheckOut()));
@@ -131,7 +130,7 @@ public class StayService {
     @Transactional
     public StayResponseDto updateDailyRates(Long id) {
         var stay = stayRepository.findById(id).orElseThrow(() ->
-                                                   new ResourceNotFoundException("Stay with id " + id + " not found"));
+                                                   new ResourceNotFoundException("Hospedagem não encontrada"));
         var actualCheckout =  HelperStayCalcs.adjustCheckout(LocalDateTime.now());
         stay.setCheckOut(actualCheckout);
         long actualDailyRates = HelperStayCalcs.calcDailyRates(stay.getCheckIn(), actualCheckout);
@@ -158,11 +157,11 @@ public class StayService {
     @Transactional
     public StayResponseDto refundStayAmount(Long id, RefundDto refundDto) {
         var stay = stayRepository.findById(id).orElseThrow(() ->
-                               new ResourceNotFoundException("Stay with id " + id + " not found"));
+                               new ResourceNotFoundException("Hospedagem não encontrada"));
         var paidAmount = stay.getPaidPrice();
 
         if(refundDto.amount().compareTo(paidAmount) > 0){
-            throw new PaymentException("Payment amount exceeds total paid amount");
+            throw new PaymentException("O valor do estorno não pode ser maior que o valor pago");
         }
         stay.setPaidPrice(paidAmount.subtract(refundDto.amount()));
         stay.setIsPaid(stay.getPaidPrice().compareTo(stay.getTotalPrice()) == 0);
@@ -192,4 +191,3 @@ public class StayService {
         payment.setStay(stay);
     }
 }
-

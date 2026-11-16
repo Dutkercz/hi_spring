@@ -3,15 +3,11 @@ package dutkercz.hi_backend.controller;
 import dutkercz.hi_backend.dto.DailyPricesDto;
 import dutkercz.hi_backend.dto.DailyPricesUpdateDto;
 import dutkercz.hi_backend.dto.admin.MonthlyResume;
-import dutkercz.hi_backend.dto.client.ClientResponseDto;
 import dutkercz.hi_backend.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -26,8 +22,7 @@ public class AdminController {
     }
 
     @PatchMapping
-    public ResponseEntity<DailyPricesDto> adjustDailyPrice(@RequestBody @Valid DailyPricesUpdateDto request)
-            throws BadRequestException {
+    public ResponseEntity<DailyPricesDto> adjustDailyPrice(@RequestBody @Valid DailyPricesUpdateDto request) {
         return ResponseEntity.ok(adminService.adjustDailyPrice(request));
     }
 

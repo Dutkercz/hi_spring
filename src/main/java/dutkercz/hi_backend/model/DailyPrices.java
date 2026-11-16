@@ -1,6 +1,5 @@
 package dutkercz.hi_backend.model;
 
-import dutkercz.hi_backend.dto.DailyPricesDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

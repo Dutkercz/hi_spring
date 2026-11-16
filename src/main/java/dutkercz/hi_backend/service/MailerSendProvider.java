@@ -1,7 +1,6 @@
 package dutkercz.hi_backend.service;
 
 import com.mailersend.sdk.MailerSend;
-import com.mailersend.sdk.MailerSendResponse;
 import com.mailersend.sdk.Recipient;
 import com.mailersend.sdk.emails.Email;
 import com.mailersend.sdk.exceptions.MailerSendException;

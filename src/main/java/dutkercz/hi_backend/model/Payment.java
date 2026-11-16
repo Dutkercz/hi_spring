@@ -2,7 +2,6 @@ package dutkercz.hi_backend.model;
 
 import dutkercz.hi_backend.model.enums.PaymentMethod;
 import jakarta.persistence.*;
-import jdk.jfr.Timestamp;
 import lombok.*;
 
 import java.math.BigDecimal;

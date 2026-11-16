@@ -7,10 +7,10 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public record StayPayment(
-        @NotNull(message = "Payment method cant be null")
+        @NotNull(message = "A forma de pagamento é obrigatória")
         PaymentMethod method,
 
-        @NotNull
-        @DecimalMin(value = "0", message = "Payment amount cant be zero or negative")
+        @NotNull(message = "O valor do pagamento é obrigatório")
+        @DecimalMin(value = "0", inclusive = false, message = "O valor do pagamento deve ser maior que zero")
         BigDecimal amount) {
 }

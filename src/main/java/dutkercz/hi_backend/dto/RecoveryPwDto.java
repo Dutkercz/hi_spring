@@ -3,9 +3,9 @@ package dutkercz.hi_backend.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public record RecoveryPwDto(
-        @NotBlank(message = "Por favor, informe o código OTP")
+        @NotBlank(message = "Informe o código de recuperação")
         String otpCode,
-        @NotBlank(message = "Informe a sua nova senha")
+        @NotBlank(message = "Informe a nova senha")
         String password
 ) {
 }

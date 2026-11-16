@@ -14,7 +14,6 @@ import dutkercz.hi_backend.repository.OtpRepository;
 import dutkercz.hi_backend.repository.UserRepository;
 import dutkercz.hi_backend.service.utils.Hasher;
 import io.github.bucket4j.ConsumptionProbe;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +52,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username).orElseThrow(() ->
-                new ResourceNotFoundException("Email or password invalid"));
+                new ResourceNotFoundException("E-mail ou senha inválidos"));
     }
 
     //username no sistema é o email, então ocasionalmente pode aparecer um ou outro... irei normalizar isso
@@ -85,7 +84,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserResponseDto registerUser(@Valid UserRequestDto requestDto) {
         if(userRepository.existsByEmail(requestDto.email())){
-            throw new ResourceExistsException("Email já cadastrado");
+            throw new ResourceExistsException("Este e-mail já está cadastrado");
         }
         var encodedPw = passwordEncoder.encode(requestDto.password());
         var user = new User();
@@ -121,7 +120,7 @@ public class UserService implements UserDetailsService {
             userRepository.save(user);
 
         } catch (IOException e) {
-            throw new RuntimeException("Falha ao tentar adicionar imagem: " + e.getMessage());
+            throw new RuntimeException("Não foi possível adicionar a imagem. Tente novamente.", e);
         }
     }
 
@@ -131,7 +130,7 @@ public class UserService implements UserDetailsService {
         try {
             Files.deleteIfExists(path);
         } catch (IOException e) {
-            throw new RuntimeException("Falha ao deletar imagem: " + e.getMessage());
+            throw new RuntimeException("Não foi possível remover a imagem. Tente novamente.", e);
         }
     }
 

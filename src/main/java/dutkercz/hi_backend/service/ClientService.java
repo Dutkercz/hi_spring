@@ -42,7 +42,7 @@ public class ClientService {
 
     public Client getByCpf(String cpf){
         return clientRepository.findByCpf(cpf).orElseThrow(
-                () -> new ResourceNotFoundException("Client not found with cpf " + cpf));
+                () -> new ResourceNotFoundException("Cliente não encontrado"));
     }
 
     public List<ClientResponseDto> findClients(String param) {
@@ -64,13 +64,13 @@ public class ClientService {
 
     private List<ClientResponseDto> getClientByCpf(String param) {
         var clients =  List.of(clientRepository.findByCpf(param).orElseThrow(() ->
-                                            new ResourceNotFoundException("Client not found")));
+                                            new ResourceNotFoundException("Cliente não encontrado")));
         return clients.stream().map(clientMapper::toClientResponseDto).toList();
     }
 
     public ClientDetailDto getClientDetails(Long id){
         var client = clientRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Client not found "));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
         var stays = stayRepository.findAllByClientId(client.getId());
         return clientMapper.toClientDetail(client, stays);
     }

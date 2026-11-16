@@ -42,7 +42,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> refreshToken(@CookieValue(name = "refreshToken") String refreshToken,
                                           HttpServletResponse response) throws NoSuchAlgorithmException {
         if (refreshToken == null || refreshToken.isBlank()) {
-            throw new CookieInvalidException("refreshToken cannot be null or blank");
+            throw new CookieInvalidException("O token de renovação da sessão é obrigatório");
         }
         return ResponseEntity.ok(jwtService.renewRefreshToken(refreshToken, response));
     }

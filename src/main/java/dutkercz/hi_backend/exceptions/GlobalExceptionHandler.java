@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -53,21 +52,24 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({CookieInvalidException.class, JwtException.class})
-    public ResponseEntity<ProblemDetail> handleCookieInvalidException(CookieInvalidException e) {
+    public ResponseEntity<ProblemDetail> handleCookieInvalidException(RuntimeException e) {
         var error = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ProblemDetail> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        var error = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+        var error = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "Não foi possível interpretar os dados enviados. Verifique os campos e tente novamente."
+        );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ProblemDetail> handleAuthorizationDeniedException() {
         var error = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN,
-                                                     "Você não tem permissão para isso");
+                                                     "Você não tem permissão para realizar esta ação.");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
@@ -76,6 +78,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
              .header("Retry-After", String.valueOf(e.getWaitForRefillSeconds()))
              .body(ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS,
-    "Muitas tentativas para este email, tente novamente em " + e.getWaitForRefillSeconds() + " minutos"));
+    "Muitas tentativas de recuperação de senha. Tente novamente em "
+            + e.getWaitForRefillSeconds() + " minutos."));
     }
 }

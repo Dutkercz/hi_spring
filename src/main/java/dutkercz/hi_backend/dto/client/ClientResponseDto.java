@@ -2,7 +2,6 @@ package dutkercz.hi_backend.dto.client;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import dutkercz.hi_backend.dto.address.AddressResponseDto;
-import dutkercz.hi_backend.model.enums.ClientStatusEnum;
 
 import java.time.LocalDateTime;
 import java.util.List;

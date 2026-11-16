@@ -76,7 +76,8 @@ public class UserController {
     }
 
     @PostMapping("/recovery-pw")
-    public ResponseEntity<Void> recoveryPwRedefine(@RequestBody RecoveryPwDto request) throws NoSuchAlgorithmException {
+    public ResponseEntity<Void> recoveryPwRedefine(@RequestBody @Valid RecoveryPwDto request)
+            throws NoSuchAlgorithmException {
         userService.recoveryPw(request);
         return ResponseEntity.ok().build();
     }

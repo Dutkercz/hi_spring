@@ -1,9 +1,7 @@
 package dutkercz.hi_backend.service.utils;
 
 import dutkercz.hi_backend.model.DailyPrices;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

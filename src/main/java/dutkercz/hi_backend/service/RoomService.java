@@ -44,7 +44,7 @@ public class RoomService {
 
     public Room getRoomById(Long id) {
         return roomRepository.findById(id)
-                     .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + id));
+                     .orElseThrow(() -> new ResourceNotFoundException("Apartamento não encontrado"));
     }
 
     @Transactional

@@ -37,10 +37,10 @@ public class JwtService {
         String receivedHashedToken = Hasher.generateHash(receivedRefresh);
         var claims = validateRefreshToken(receivedRefresh);
         var user = (User) userRepository.findByEmail(claims.getSubject()).orElseThrow(() ->
-                new ResourceNotFoundException("User not found"));
+                new ResourceNotFoundException("Usuário não encontrado"));
 
         if(!receivedHashedToken.equals(user.getRefreshToken())){
-            throw new JwtException("Refresh token invalido");
+            throw new JwtException("O token de renovação da sessão é inválido");
         }
         var newRefreshToken = generateRefreshToken(user);
         setCookie(newRefreshToken, response);
@@ -100,11 +100,11 @@ public class JwtService {
                              .parseSignedClaims(token)
                              .getPayload();
             if(!"access".equals(claims.get("type"))){
-                throw new JwtException("Token inválido");
+                throw new JwtException("O token de acesso é inválido");
             }
             return claims.getSubject();
         } catch (JwtException e) {
-            throw new JwtException("Erro ao validar token");
+            throw new JwtException("Não foi possível validar o token de acesso");
         }
     }
 
@@ -117,11 +117,11 @@ public class JwtService {
                              .getPayload();
 
             if (!"refresh".equals(claims.get("type", String.class))){
-                throw new JwtException("Refresh token inválido");
+                throw new JwtException("O token de renovação da sessão é inválido");
             }
             return claims;
         } catch (JwtException e) {
-            throw new JwtException(e.getMessage());
+            throw new JwtException("O token de renovação da sessão é inválido");
         }
     }
 

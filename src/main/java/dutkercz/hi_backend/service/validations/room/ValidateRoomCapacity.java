@@ -12,7 +12,7 @@ public class ValidateRoomCapacity implements RoomValidations {
         int totalCapacity = 2 * room.getDoubleBeds() + room.getSingleBeds();
         int totalGuest = requestDto.totalGuests();
         if (totalGuest > totalCapacity) {
-            throw new BusinessException("Guest exceeds room capacity");
+            throw new BusinessException("A quantidade de hóspedes excede a capacidade do apartamento");
         }
     }
 }
