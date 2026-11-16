@@ -1,5 +1,3 @@
-CREATE TYPE user_role AS ENUM ('USER', 'ADMIN');
-
 CREATE TABLE tb_users
 (
     id            BIGSERIAL PRIMARY KEY,
@@ -10,6 +8,8 @@ CREATE TABLE tb_users
     is_active     BOOLEAN,
     created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_at     TIMESTAMP,
-    role          user_role             DEFAULT 'USER',
-    refresh_token VARCHAR(255)
+    role          VARCHAR(20) DEFAULT 'USER',
+    refresh_token VARCHAR(255),
+
+    CONSTRAINT chk_user_role CHECK ( role IN ('USER', 'ADMIN'))
 );
