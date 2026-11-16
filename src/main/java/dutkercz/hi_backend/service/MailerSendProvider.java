@@ -62,21 +62,13 @@ public class MailerSendProvider implements MailSender {
     }
 
     private void generateRecoveryMail(String firstName, Email email, Recipient recipient, String otpCode) {
-        //quem envia
-        // id do template personalizado
-        // linguagem, o provedor tem translate automatico
-        // auxiliar para ter a propriedade first_name nos moldes do template
-        // variavel / valor
-        //auxiliar para ter a propiedade recovery_link nos moldes do template
         email.setFrom("Hotel Manager", "recovery-pw@" + DOMAIN);
 
         email.setTemplateId("z3m5jgrryzogdpyo");
 
         email.addPersonalization(recipient,"first_name",firstName);
         String recoveryUrl = RECOVERY_BASE_URL + otpCode;
-        log.info("{}", recoveryUrl);
         email.addPersonalization(recipient, "reset_link", recoveryUrl);
-
         email.setSubject("Recuperação de senha");;
     }
 
