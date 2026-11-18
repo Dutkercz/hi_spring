@@ -28,7 +28,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
         var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN,
                                                              "Você não tem permissão para realizar esta ação.");
-        log.error("Access denied called {}", accessDeniedException.getMessage());
+        log.warn("Access denied: {}", request.getRequestURI());
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(objectMapper.writeValueAsString(problemDetail));

@@ -17,7 +17,7 @@ public record StayRequestDto(
         Long roomId,
 
         @NotNull(message = "A data de check-in é obrigatória")
-        @FutureOrPresent(message = "A data de check-in deve ser hoje ou uma data futura")
+        @FutureOrPresent(message = "A data de check-in deve ser hoje ou uma data futura" )
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         LocalDateTime checkIn,
 

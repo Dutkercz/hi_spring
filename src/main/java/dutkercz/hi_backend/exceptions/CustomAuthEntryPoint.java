@@ -25,8 +25,8 @@ public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) throws IOException, ServletException, JwtException {
-        log.error("Authentication entry point called {}", authException.getMessage());
+                         AuthenticationException authException) throws IOException, ServletException {
+        log.warn("Authentication entry point called {}", authException.getMessage());
         var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,
                                                              "Faça login para realizar esta ação.");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

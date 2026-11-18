@@ -16,9 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -59,8 +63,22 @@ public class RoomService {
     }
 
     public RoomResponseDto addRoom() {
-        var roomNumber = roomRepository.count() + 1;
-        Room room = new Room(null, String.valueOf(roomNumber), 0, 0,
+        var rooms = roomRepository.findAll().stream().sorted(
+                Comparator.comparingInt(
+                        r -> Integer.parseInt(r.getRoomNumber()))).toList();
+
+        int newRoomNumber = rooms.size()+1;
+        int roomIndex = 0;
+
+        for(int i = 1; i <= rooms.size(); i++) {
+            if (Integer.parseInt(rooms.get(roomIndex).getRoomNumber()) != i){
+                newRoomNumber = i;
+                break;
+            }
+            roomIndex++;
+        }
+
+        Room room = new Room(null, String.valueOf(newRoomNumber), 0, 0,
                              RoomStatusEnum.AVAILABLE, new ArrayList<>());
         return  roomMapper.toResponseRoomDto(roomRepository.save(room));
     }
